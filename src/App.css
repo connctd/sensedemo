@@ -1,20 +1,38 @@
+body {
+  background-color: #000000;
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.StartContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  margin-top: -50px;
+  margin-left: -300px;
+  text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.OptionsContainer {
+  color: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  position: fixed;
+  top: 20px;
+  right: 0px;
+  background-color: rgba(255, 255, 255, 0.3);
+  width: 80px;
+}
+
+.OptionsButton {
+  width: 80%;
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #EEEEEE;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -24,15 +42,76 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.Site {
+  stroke: #000000;
+  stroke-width: 1;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.SiteName {
+  fill: #444444;
+  font-size: 0.4em;
+  text-anchor: end;
+}
+
+.Building {
+  fill: #FFFFFF;
+  stroke: #444444;
+  stroke-width: 1;
+}
+
+.BuildingName {
+  fill: #444444;
+  font-size: 0.4em;
+  text-anchor: end;
+}
+
+.Storey {
+  fill: none;
+  stroke: #CCCCCC;
+  stroke-width: 0;
+  stroke-dasharray: 4;
+}
+
+.StoreyName {
+  fill: #444444;
+  font-size: 0.7em;
+  cursor: pointer;
+}
+
+.Room {
+  stroke-width: 1;
+}
+
+.RoomName {
+  fill: #444444;
+  font-size: 0.4em;
+  text-anchor: end;
+}
+
+.ThingText {
+  text-anchor: middle;
+  font-size: 0.4em;
+}
+
+.Wall {
+  stroke-width: 10;
+  stroke: black;
+}
+
+.ModelInput {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
+.ModelButton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
 }
