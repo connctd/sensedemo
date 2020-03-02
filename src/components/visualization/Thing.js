@@ -30,7 +30,7 @@ export default class Thing extends React.Component {
         var xhr = new XMLHttpRequest()
         xhr.addEventListener('load', this.responseReceived);
         xhr.open('GET', this.state.data.href);
-        xhr.setRequestHeader("Authorization", "Bearer Plm0oIF0gASg6s_Lvv2e0dkUXWbC5Wpc7CmMDIyqCS0.TIelI5Z0ERWD8vVaGlIU8zs7tgBCoEimE8KUIydy86o");
+        
         xhr.setRequestHeader("X-External-Subject-ID", "default");
         xhr.send();
     }
