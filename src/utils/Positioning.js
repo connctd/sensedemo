@@ -22,7 +22,7 @@ export const getPositionWithOffset = (position, offset) => {
 };
 
 // searches for highest x and y coords, applies offset afterwards
-export const getMaxCoord = (area, offset) => {
+export const getRightBottomCorner = (area, offset) => {
     let correction = 5;
 
     let coords = {
@@ -36,6 +36,30 @@ export const getMaxCoord = (area, offset) => {
         }
 
         if (area[i].y > coords.y) {
+            coords.y = area[i].y;
+        }
+    }
+
+    coords.x = coords.x + offset.x - correction;
+    coords.y = coords.y + offset.y - correction;
+
+    return coords
+};
+
+export const getLeftBottomCorner = (area, offset) => {
+    let correction = 0;
+
+    let coords = {
+        x: -1,
+        y: -1
+    }
+
+    for (var i = 0; i < area.length; i++) {
+        if (coords.x === -1 || area[i].x < coords.x) {
+            coords.x = area[i].x;
+        }
+
+        if (coords.y === -1 || area[i].y > coords.y) {
             coords.y = area[i].y;
         }
     }

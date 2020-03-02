@@ -1,6 +1,6 @@
 import React from 'react';
 import Storey from './Storey.js'
-import { getMaxCoord, convertVectorArrayToPointsString, getOrigin } from '../../utils/Positioning.js'
+import { getLeftBottomCorner, getRightBottomCorner, convertVectorArrayToPointsString, getOrigin } from '../../utils/Positioning.js'
 import '../../App.css';
 
 export default class Building extends React.Component {
@@ -43,16 +43,18 @@ export default class Building extends React.Component {
         let offset = this.props.offset;
         let subElementOffset = getOrigin(data.area, offset)
 
-        let textPosition = getMaxCoord(data.area, offset);
+        let namePosition = getLeftBottomCorner(data.area, offset);
+        namePosition.y = namePosition.y + 10;
+        let storeyPosition = getRightBottomCorner(data.area, offset);
 
         let renderedStoreys = data.storeys.map((storey) => {
                 return (
                     <svg key={storey.id}>
                         <svg>
-                            <text onClick={() => this.handleClick(storey.level)} x={textPosition.x + 25} y={textPosition.y + storey.level * 15} className="StoreyName">{storey.name}</text>
+                            <text onClick={() => this.handleClick(storey.level)} x={storeyPosition.x + 25} y={storeyPosition.y + storey.level * 16} className="StoreyName">{storey.name}</text>
                         </svg>
                         <svg visibility={this.state.storeyVisibility[storey.level]}>
-                            <text x={textPosition.x + 15} y={textPosition.y + storey.level * 15} className="StoreyName">&bull;</text>
+                            <text x={storeyPosition.x + 15} y={storeyPosition.y + storey.level * 15} className="StoreyName">&bull;</text>
                         </svg>
                         <svg visibility={this.state.storeyVisibility[storey.level]}>
                             <Storey
@@ -68,10 +70,14 @@ export default class Building extends React.Component {
 
         return (
             <svg>
-                
-                <polygon  points={points} className="Building" />
+                <defs>
+                    <pattern id="backgroundBuilding" patternUnits="userSpaceOnUse" width="10" height="10">
+                        <image href="/images/wall.png" x="0" y="0" width="10" height="10" />
+                    </pattern>
+                </defs>
+                <polygon fill="url(#backgroundBuilding)" points={points} className="Building" />
                 {renderedStoreys}
-                <text {...textPosition} className="BuildingName">{data.name}</text>
+                <text {...namePosition} className="BuildingName">{data.name}</text>
             </svg>
         )
     }

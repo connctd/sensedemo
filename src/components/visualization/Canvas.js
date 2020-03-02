@@ -1,6 +1,6 @@
 import React from 'react';
 import Site from './Site.js'
-import { getMaxCoord } from '../../utils/Positioning.js'
+import { getRightBottomCorner } from '../../utils/Positioning.js'
 import '../../App.css';
 
 export default class Canvas extends React.Component {
@@ -26,7 +26,7 @@ export default class Canvas extends React.Component {
 
         // search for the site with max coords to figure out the canvas size
         for (var i = 0; i < data.length; i++) {
-            var coords = getMaxCoord(data[i].area, this.props.offset);
+            var coords = getRightBottomCorner(data[i].area, this.props.offset);
             if (coords.x > highestCoords.x) {
                 highestCoords.x = coords.x 
             }

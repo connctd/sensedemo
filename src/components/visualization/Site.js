@@ -1,6 +1,6 @@
 import React from 'react';
 import Building from './Building.js';
-import { getMaxCoord, convertVectorArrayToPointsString, getOrigin } from '../../utils/Positioning.js'
+import { getRightBottomCorner, convertVectorArrayToPointsString, getOrigin } from '../../utils/Positioning.js'
 import '../../App.css';
 
 export default class Site extends React.Component {
@@ -9,7 +9,7 @@ export default class Site extends React.Component {
         let offset = this.props.offset;
         let subElementOffset = getOrigin(data.area, offset)
 
-        let textPosition = getMaxCoord(data.area, offset);
+        let textPosition = getRightBottomCorner(data.area, offset);
 
         let buildings = data.buildings;
         let renderedBuildings = buildings.map((building) => 

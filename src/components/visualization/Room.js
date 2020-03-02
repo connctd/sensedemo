@@ -1,5 +1,5 @@
 import React from 'react';
-import { getMaxCoord, convertVectorArrayToPointsString, getOrigin } from '../../utils/Positioning.js'
+import { getRightBottomCorner, convertVectorArrayToPointsString, getOrigin } from '../../utils/Positioning.js'
 import Thing from './Thing.js'
 import '../../App.css';
 
@@ -9,7 +9,7 @@ export default class Room extends React.Component {
         let data = this.props.data;
         let offset = this.props.offset;
         let subElementOffset = getOrigin(data.area, offset)
-        let textPosition = getMaxCoord(data.area, offset);
+        let textPosition = getRightBottomCorner(data.area, offset);
 
         let renderedThings = data.things.map((thing) =>
             <Thing key={thing.id}

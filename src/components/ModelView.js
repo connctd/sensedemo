@@ -2,6 +2,7 @@ import React from 'react';
 import './../App.css';
 import Canvas from './visualization/Canvas.js';
 import Options from './control/Options.js';
+import { resolveModel } from '../utils/Parser.js';
 
 export default class ModelView extends React.Component {
 
@@ -84,6 +85,21 @@ export default class ModelView extends React.Component {
                                         "things": [
 
                                         ]
+                                    },
+                                    {
+                                        "id": "3b3",
+                                        "name": "Corridor",
+                                        "area": [
+                                            { "x": 10, "y": 140 },
+                                            { "x": 110, "y": 140 },
+                                            { "x": 110, "y": 100 },
+                                            { "x": 430, "y": 100 },
+                                            { "x": 430, "y": 180 },
+                                            { "x": 10, "y": 180 },
+                                        ],
+                                        "things": [
+
+                                        ]
                                     }
                                 ]
                             }
@@ -93,10 +109,55 @@ export default class ModelView extends React.Component {
             }
         ];
 
+        this.canvasArea = React.createRef();
+        this.modelArea = React.createRef();
+        this.infoArea = React.createRef();
+
         this.state = { sites: sites };
+
+        this.onParseError = this.onParseError.bind(this);
+        this.onParseWarning = this.onParseWarning.bind(this);
+        this.onParseInfo = this.onParseInfo.bind(this);
+        this.onParseSuccess = this.onParseSuccess.bind(this);
+
+        // get link to model and parse it
+        var decodedString = decodeURIComponent(this.props.match.params.model)
+        decodedString = Buffer.from(decodedString, 'base64').toString('ascii');
+
+        
+    }
+
+    onParseError(message, obj) {
+        console.warn(message, obj);
+        var newState = this.state;
+        newState.log = newState.log + "[ERRO]" + message;
+        this.setState(newState);
+    }
+
+    onParseWarning(message, obj) {
+        console.warn(message, obj);
+        var newState = this.state;
+        newState.log = newState.log + "[WARN]" + message;
+        this.setState(newState);
+    }
+
+    onParseInfo(message, obj) {
+        var newState = this.state;
+        newState.log = newState.log + "[INFO]" + message;
+        this.setState(newState);
+    }
+
+    onParseSuccess(model) {
+        //this.modelArea.current.innerHTML = JSON.stringify(model, null, "<br>");
+        
+    }
+
+    componentDidMount() {
+        resolveModel("decodedString", this.onParseSuccess, this.onParseError, this.onParseWarning, this.onParseInfo);   
     }
 
     render() {
+        
         // offset allow us relative positioning instead of absolute positioning
         let offset = { x: 2, y: 2 };
 
@@ -105,16 +166,14 @@ export default class ModelView extends React.Component {
                 <p>Error. No Model input</p>
             );
         } else {
-            // TODO resolve model
-            var decodedString = decodeURIComponent(this.props.match.params.model)
-            decodedString = Buffer.from(decodedString, 'base64').toString('ascii');
-
-            var canvasRef = React.createRef();
+            
             // TODO parse model and hand over
             return (
                 <div className="App">
-                    <Options defaultZoom={80} canvasRef={canvasRef} />
-                    <Canvas ref={canvasRef} width="80%" height="80%" data={this.state.sites} offset={offset} />
+                    <Options defaultZoom={80} canvasRef={this.canvasArea} />
+                    <Canvas ref={this.canvasArea} width="80%" height="80%" data={this.state.sites} offset={offset} />
+                    <div visibility="hidden" ref={this.modelArea}></div>
+                    <div visibility="hidden" ref={this.infoArea}></div>
                 </div>
             );
         }
