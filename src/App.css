@@ -115,3 +115,71 @@ body {
   display: inline-block;
   font-size: 16px;
 }
+
+.ShowButton {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.HideButton {
+  background-color: orange; /* Green */
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.Log {
+  text-align: left;
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.LogEntry {
+  width: 400px;
+  display: inline-block;
+}
+
+.LogIcon {
+  width: 16px;
+  display: inline-block;
+  stroke: #AAAAAA;
+  stroke-width: 1px;
+}
+
+.LogIconText {
+  text-anchor: middle;
+  font-size: 0.5em;
+  font-style: italic;
+  font-family: 'Courier New', Courier, monospace;
+  stroke: #EEEEEE;
+}
+
+.Blue {
+  fill: rgb(158, 148, 196);
+}
+
+.Red {
+  fill: rgb(255, 121, 121);
+}
+
+.Yellow {
+  fill: rgb(186, 194, 72);
+}
+
+.Code {
+  text-align: left;
+}
+
+.Hidden {
+  display:none;
+}

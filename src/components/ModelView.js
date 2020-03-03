@@ -2,6 +2,7 @@ import React from 'react';
 import './../App.css';
 import Canvas from './visualization/Canvas.js';
 import Options from './control/Options.js';
+import ExpandableObject from './control/ExpandableObject.js';
 import { resolveModel } from '../utils/Parser.js';
 
 export default class ModelView extends React.Component {
@@ -110,10 +111,8 @@ export default class ModelView extends React.Component {
         ];
 
         this.canvasArea = React.createRef();
-        this.modelArea = React.createRef();
-        this.infoArea = React.createRef();
 
-        this.state = { sites: sites };
+        this.state = { sites: sites, logEntries: [] };
 
         this.onParseError = this.onParseError.bind(this);
         this.onParseWarning = this.onParseWarning.bind(this);
@@ -128,28 +127,30 @@ export default class ModelView extends React.Component {
     }
 
     onParseError(message, obj) {
-        console.warn(message, obj);
-        var newState = this.state;
-        newState.log = newState.log + "[ERRO]" + message;
-        this.setState(newState);
+        this.addLogEntry("err", message, obj);
     }
 
     onParseWarning(message, obj) {
-        console.warn(message, obj);
-        var newState = this.state;
-        newState.log = newState.log + "[WARN]" + message;
-        this.setState(newState);
+        this.addLogEntry("warn", message, obj);
     }
 
     onParseInfo(message, obj) {
-        var newState = this.state;
-        newState.log = newState.log + "[INFO]" + message;
-        this.setState(newState);
+        this.addLogEntry("info", message, obj);
     }
 
-    onParseSuccess(model) {
-        //this.modelArea.current.innerHTML = JSON.stringify(model, null, "<br>");
-        
+    onParseSuccess(message, obj) {
+        this.addLogEntry("info", message, obj);
+    }
+
+    addLogEntry(severity, message, obj) {
+        var newState = this.state;
+        newState.logEntries.push(<ExpandableObject
+            key={newState.logEntries.length}
+            severity={severity}
+            message={message}
+            json={obj != null ? JSON.stringify(obj, null, 4) : null} 
+        />);
+        this.setState(newState);
     }
 
     componentDidMount() {
@@ -157,7 +158,6 @@ export default class ModelView extends React.Component {
     }
 
     render() {
-        
         // offset allow us relative positioning instead of absolute positioning
         let offset = { x: 2, y: 2 };
 
@@ -166,14 +166,11 @@ export default class ModelView extends React.Component {
                 <p>Error. No Model input</p>
             );
         } else {
-            
-            // TODO parse model and hand over
             return (
                 <div className="App">
                     <Options defaultZoom={80} canvasRef={this.canvasArea} />
                     <Canvas ref={this.canvasArea} width="80%" height="80%" data={this.state.sites} offset={offset} />
-                    <div visibility="hidden" ref={this.modelArea}></div>
-                    <div visibility="hidden" ref={this.infoArea}></div>
+                    {this.state.logEntries.map(obj => obj)}
                 </div>
             );
         }
