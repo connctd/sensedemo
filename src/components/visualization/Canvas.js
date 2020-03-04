@@ -21,7 +21,12 @@ export default class Canvas extends React.Component {
     }
 
     render() {
-        let data = this.props.data;
+        let data = this.props.model;
+        
+        if (data === null) {
+            return "No model data...";
+        }
+
         var highestCoords = { x: 0, y: 0 };
 
         // search for the site with max coords to figure out the canvas size

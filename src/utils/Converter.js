@@ -9,6 +9,7 @@ export const extractSiteData = (model, successCallback, errorCallback, warningCa
     }
 
     var dimensions = extractDimensions(model, errorCallback);
+    var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
     var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownSite", warningCallback);
     var buildings = getArrayNodeOrDefault(model, "bot:hasBuilding", [], warningCallback);
 
@@ -18,7 +19,7 @@ export const extractSiteData = (model, successCallback, errorCallback, warningCa
         convertedBuildings.push(convertedBuilding);
     }
 
-    return { name: name, area: dimensions, buildings: convertedBuildings };
+    return [{ id: id, name: name, area: dimensions, buildings: convertedBuildings }];
 }
 
 const extractBuildingData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
@@ -31,6 +32,7 @@ const extractBuildingData = (model, successCallback, errorCallback, warningCallb
     }
 
     var dimensions = extractDimensions(model, errorCallback);
+    var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
     var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownBuilding", warningCallback);
     var storeys = getArrayNodeOrDefault(model, "bot:hasStorey", [], warningCallback);
 
@@ -40,7 +42,7 @@ const extractBuildingData = (model, successCallback, errorCallback, warningCallb
         convertedStoreys.push(convertedStorey);
     }
 
-    return { name: name, area: dimensions, storeys: convertedStoreys };
+    return { id: id, name: name, area: dimensions, storeys: convertedStoreys };
 }
 
 const extractStoryData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
@@ -53,7 +55,9 @@ const extractStoryData = (model, successCallback, errorCallback, warningCallback
     }
 
     var dimensions = extractDimensions(model, errorCallback);
+    var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
     var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownStorey", warningCallback);
+    var floor = getNodeOrDefault(model, "http://schema.org/floorLevel", "0", warningCallback);
     var spaces = getArrayNodeOrDefault(model, "bot:hasSpace", [], warningCallback);
 
     var convertedSpaces = [];
@@ -62,9 +66,8 @@ const extractStoryData = (model, successCallback, errorCallback, warningCallback
         convertedSpaces.push(convertedSpace);
     }
 
-    return { name: name, area: dimensions, spaces: convertedSpaces };
+    return { id: id, name: name, level: floor, area: dimensions, rooms: convertedSpaces };
 }
-
 
 const extractSpaceData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting space from model", model);
@@ -76,16 +79,34 @@ const extractSpaceData = (model, successCallback, errorCallback, warningCallback
     }
 
     var dimensions = extractDimensions(model, errorCallback);
+    var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
     var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownSpace", warningCallback);
     var elements = getArrayNodeOrDefault(model, "bot:hasElement", [], warningCallback);
 
     var convertedElements = [];
     for (var i = 0; i < elements.length; i++) {
-        //var convertedElement = extractBuildingData(spaces[i], successCallback, errorCallback, warningCallback, infoCallback);
-        //convertedStoreys.push(convertedStorey);
+        var convertedElement = extractElementData(elements[i], successCallback, errorCallback, warningCallback, infoCallback);
+        convertedElements.push(convertedElement);
     }
 
-    return { name: name, area: dimensions, elements: convertedElements };
+    return { id: id, name: name, area: dimensions, things: convertedElements };
+}
+
+const extractElementData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+    infoCallback("Extracting element from model", model);
+
+    // we are expecting a site as root element
+    if (!expectType(model, "wot:Thing", errorCallback)) {
+        warningCallback("Node is no wot:Thing. Skipping", model);
+        return;
+    }
+
+    var position = extractPosition(model, errorCallback);
+    var id = getNodeOrDefault(model, "@id", "", warningCallback);
+
+    warningCallback("Now I have to resolve that...", id);
+    
+    return { id: id, position: position };
 }
 
 // resolves model[field] or returns default if not found
@@ -115,15 +136,20 @@ const getArrayNodeOrDefault = (model, field, defaultValue, warningCallback) => {
 
 // searches for geo coordinates and builds up an array of points
 const extractDimensions = (model, errorCallback) => {
-    var polygon = model["geo:Polygon"];
-    if (polygon === undefined) {
-        errorCallback("Polygon not found", model);
+    var geometry = model["geo:geometry"];
+    if (geometry === undefined) {
+        errorCallback("Geometry not found", model);
         return [];
     }
 
-    var coordinates = polygon["geo:coordinates"];
+    if (!expectType(geometry, "geo:Polygon")) {
+        errorCallback("Expected polygon type", geometry);
+        return [];
+    }
+
+    var coordinates = geometry["geo:coordinates"];
     if (coordinates === undefined || !Array.isArray(coordinates)) {
-        errorCallback("Coordinates undefined or not an array", polygon);
+        errorCallback("Coordinates undefined or not an array", geometry);
         return [];
     }
 
@@ -138,6 +164,33 @@ const extractDimensions = (model, errorCallback) => {
     }
 
     return result;
+}
+
+// searches for a geo position
+const extractPosition = (model, errorCallback) => {
+    var geometry = model["geo:geometry"];
+    if (geometry === undefined) {
+        errorCallback("Geometry not found", model);
+        return {};
+    }
+
+    if (!expectType(geometry, "geo:Point")) {
+        errorCallback("Expected point type", geometry);
+        return {};
+    }
+
+    var coordinates = geometry["geo:coordinates"];
+    if (coordinates === undefined || !Array.isArray(coordinates)) {
+        errorCallback("Coordinates undefined or not an array", geometry);
+        return {};
+    }
+
+    if (coordinates.length != 2) {
+        errorCallback("Malformed position coordinates", model);
+        return {};
+    }
+
+    return { x: coordinates[0], y: coordinates[1] };
 }
 
 // checks if @type is or contains expected type
@@ -158,4 +211,12 @@ const expectType = (model, expectedType) => {
     }
 
     return false;
+}
+
+// takes an internal address and base64 decodes the location part
+const asExternalURL = (input) => {
+    var arr = input.split("/api/schema/");
+    var urlDecoded = decodeURIComponent(arr[1]);
+    var decoded = Buffer.from(urlDecoded, 'base64').toString('ascii');
+    return decoded;
 }

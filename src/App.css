@@ -105,8 +105,7 @@ body {
   box-sizing: border-box;
 }
 
-.ModelButton {
-  background-color: #4CAF50; /* Green */
+.Button {
   border: none;
   color: white;
   padding: 15px 32px;
@@ -116,8 +115,43 @@ body {
   font-size: 16px;
 }
 
+.YellowBackground {
+  background-color: #bb9152;
+}
+
+.GreenBackground {
+  background-color: #4CAF50;
+}
+
+.EditModelView {
+  position: fixed;
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.EditModelContainer {
+  height: 100%;
+}
+
+.EditModelForm {
+  height: 80%;
+}
+
+.EditModelInputField {
+  width: 100%;
+  height: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}
+
 .ShowButton {
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50;
   border: none;
   color: white;
   padding: 1px 1px;
@@ -136,6 +170,18 @@ body {
   text-decoration: none;
   display: inline-block;
   font-size: 12px;
+}
+
+.LogView {
+  margin: 0 auto;
+  text-align: left;
+  background-color: white;
+  height: 100%;
+  width: 70%;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 10px;
+  border-radius: 10px;
 }
 
 .Log {
@@ -178,6 +224,10 @@ body {
 
 .Code {
   text-align: left;
+  background-color: rgba(250, 250, 166, 0.9);
+  border-radius: 15px;
+  padding: 10px;
+  width: 90%;
 }
 
 .Hidden {

@@ -14,7 +14,7 @@ export default class Building extends React.Component {
         let newStoreyVisibility = [];
         for (var i = 0; i < data.storeys.length; i++ ) {
             // default visible storey
-            if (data.storeys[i].level === 1) {
+            if (data.storeys[i].level === "1") {
                 newStoreyVisibility[data.storeys[i].level] = "visible"
             } else {
                 newStoreyVisibility[data.storeys[i].level] = "hidden"
