@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 // predefined urls
@@ -20,8 +19,13 @@ var (
 func HandleSchemaCall(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Schema call")
 
-	fragments := strings.Split(r.RequestURI, "/")
-	requestedModel := fragments[len(fragments)-1]
+	requestedModel := r.URL.Query().Get("data")
+	if requestedModel == "" {
+		fmt.Println("No data query element was passed")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	escapedModelURL, err := url.PathUnescape(requestedModel)
 
 	if err != nil {

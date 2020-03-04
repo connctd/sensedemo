@@ -10,7 +10,7 @@ import (
 // this application is just for local testing
 func main() {
 	http.HandleFunc("/api/backend", handler.HandleBackendCall)
-	http.HandleFunc("/api/schema/", handler.HandleSchemaCall)
+	http.HandleFunc("/api/schema", handler.HandleSchemaCall)
 	fmt.Println("Waiting...")
 	http.ListenAndServe(":8080", nil)
 

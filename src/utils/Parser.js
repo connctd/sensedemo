@@ -72,8 +72,12 @@ const asInternalURL = (input) => {
     var url = window.location.href;
     var arr = url.split("/");
     var encoded = Buffer.from(input).toString('base64');
-    return arr[0] + "//" + arr[2] + "/api/schema/" + encodeURIComponent(encoded) + "#";
-    //return "http://localhost:8080/api/schema/" + encodeURIComponent(encoded) + "#";
+
+    if (url.includes("localhost")) {
+        return "http://localhost:8080/api/schema?data=" + encodeURIComponent(encoded) + "#";
+    } else {
+        return arr[0] + "//" + arr[2] + "/api/schema/" + encodeURIComponent(encoded) + "#";
+    }
 }
 
 // schema this service is working with

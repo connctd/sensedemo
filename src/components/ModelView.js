@@ -171,6 +171,7 @@ export default class ModelView extends React.Component {
         // get link to model and parse it
         var decodedString = decodeURIComponent(this.props.match.params.model)
         decodedString = Buffer.from(decodedString, 'base64').toString('ascii');
+        console.log(decodedString);
     }
 
     onParseError(message, obj) {

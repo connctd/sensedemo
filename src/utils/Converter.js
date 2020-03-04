@@ -153,7 +153,7 @@ const extractDimensions = (model, errorCallback) => {
         return [];
     }
 
-    if (coordinates.length % 2 != 0) {
+    if (coordinates.length % 2 !== 0) {
         errorCallback("Malformed coordinates", model);
         return [];
     }
@@ -185,7 +185,7 @@ const extractPosition = (model, errorCallback) => {
         return {};
     }
 
-    if (coordinates.length != 2) {
+    if (coordinates.length !== 2) {
         errorCallback("Malformed position coordinates", model);
         return {};
     }
@@ -214,9 +214,11 @@ const expectType = (model, expectedType) => {
 }
 
 // takes an internal address and base64 decodes the location part
+/*
 const asExternalURL = (input) => {
     var arr = input.split("/api/schema/");
     var urlDecoded = decodeURIComponent(arr[1]);
     var decoded = Buffer.from(urlDecoded, 'base64').toString('ascii');
     return decoded;
 }
+*/

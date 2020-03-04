@@ -7,10 +7,10 @@ export default class ExpandableObject extends React.Component {
         
         var color = "Blue";
         var sign = "i";
-        if (this.props.severity == "err") {
+        if (this.props.severity === "err") {
             color = "Red";
             sign = "E";
-        } else if (this.props.severity == "warn") {
+        } else if (this.props.severity === "warn") {
             color = "Yellow";
             sign = "w";
         }
