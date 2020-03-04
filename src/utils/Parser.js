@@ -76,7 +76,7 @@ const asInternalURL = (input) => {
     if (url.includes("localhost")) {
         return "http://localhost:8080/api/schema?data=" + encodeURIComponent(encoded) + "#";
     } else {
-        return arr[0] + "//" + arr[2] + "/api/schema/" + encodeURIComponent(encoded) + "#";
+        return arr[0] + "//" + arr[2] + "/api/schema?data=" + encodeURIComponent(encoded) + "#";
     }
 }
 
