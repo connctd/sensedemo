@@ -1,12 +1,9 @@
 package handler
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 )
 
 // predefined urls
@@ -19,81 +16,19 @@ var (
 func HandleSchemaCall(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Schema call")
 
-	requestedModel := r.URL.Query().Get("data")
-	if requestedModel == "" {
-		fmt.Println("No data query element was passed")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	escapedModelURL, err := url.PathUnescape(requestedModel)
-
+	requestedURL := r.URL.Query().Get("data")
+	url, err := extractRequestedURL(requestedURL)
 	if err != nil {
-		fmt.Println("Failed to unescape model url", err)
+		fmt.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	decodedModelURL, err := base64.StdEncoding.DecodeString(escapedModelURL)
-	if err != nil {
-		fmt.Println("Failed to decode model url", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	modelURL := string(decodedModelURL)
-	fmt.Println(modelURL)
-
-	if modelURL == BotModelURLOne || modelURL == BotModelURLTwo {
+	if url == BotModelURLOne || url == BotModelURLTwo {
 		handleBotModelCall(w, r)
 	} else {
-		handlePublicSchema(modelURL, w, r)
+		forwardRequest(url, w, r, map[string]string{})
 	}
-}
-
-func handlePublicSchema(forward string, w http.ResponseWriter, r *http.Request) {
-	proxyReq, err := http.NewRequest(r.Method, forward, r.Body)
-	if err != nil {
-		fmt.Println("Failed to create proxy request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// copy headers to subfollowing request
-	for header, values := range r.Header {
-		for _, value := range values {
-			proxyReq.Header.Add(header, value)
-		}
-	}
-
-	// subrequest
-	client := &http.Client{}
-	resp, err := client.Do(proxyReq)
-	if err != nil {
-		fmt.Println("Failed to create proxy request", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	defer resp.Body.Close()
-
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Failed to read proxy response", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// copy proxy response headers to response
-	for header, values := range resp.Header {
-		for _, value := range values {
-			w.Header().Add(header, value)
-		}
-	}
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.WriteHeader(resp.StatusCode)
-	w.Write(bodyBytes)
 }
 
 func handleBotModelCall(w http.ResponseWriter, r *http.Request) {

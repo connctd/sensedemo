@@ -1,0 +1,5 @@
+{
+  "env": {
+    "SENSE_CONNCTD_TOKEN": "@sense-connctd-token"
+  }
+}
