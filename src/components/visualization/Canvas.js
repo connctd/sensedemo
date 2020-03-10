@@ -1,5 +1,6 @@
 import React from 'react';
 import Site from './Site.js'
+import User from './User.js'
 import { getRightBottomCorner } from '../../utils/Positioning.js'
 import '../../App.css';
 
@@ -8,7 +9,9 @@ export default class Canvas extends React.Component {
         super(props);
 
         this.setDimensions = this.setDimensions.bind(this);
-        this.state = { width: this.props.width, height: this.props.height };
+        this.onCanvasClick = this.onCanvasClick.bind(this);
+
+        this.state = { showUser: false, userPosition: {x: 0, y: 0}, width: this.props.width, height: this.props.height };
     }
 
     setDimensions(width, height) {
@@ -19,6 +22,14 @@ export default class Canvas extends React.Component {
 
         this.setState(newState);
     }
+
+    onCanvasClick(event) {
+        console.log(event.clientX);
+        var newState = this.state;
+        newState.userPosition = { x: event.clientX, y: event.clientY};
+        this.setState(newState);
+    }
+
 
     render() {
         let data = this.props.model;
@@ -48,8 +59,9 @@ export default class Canvas extends React.Component {
         )
 
         return (
-            <svg width={this.state.width} height={this.state.height} viewBox={viewBox}>
+            <svg onClick={this.onCanvasClick} width={this.state.width} height={this.state.height} viewBox={viewBox}>
                 {renderedSites}
+                <User className={this.state.showUser ? 'User' : 'User Hidden'} position={this.state.userPosition} />
             </svg>
         )
     }

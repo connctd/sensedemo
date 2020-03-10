@@ -19,7 +19,11 @@ func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
 	url, err := extractRequestedURL(requestedURL)
 	if err != nil {
 		fmt.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+
+	fmt.Println("Forward to " + url)
 
 	additionalHeaders := map[string]string{}
 	if strings.HasPrefix(url, connctdPrefix) {

@@ -35,6 +35,7 @@ func handleBotModelCall(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Sending bot model")
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/ld+json")
 
 	modelBytes, err := getBotModel()
 	if err != nil {
@@ -76,7 +77,34 @@ var botModel = `{
     "vann": "http://purl.org/vocab/vann/",
     "voaf": "http://purl.org/vocommons/voaf#",
     "vs": "http://www.w3.org/2003/06/sw-vocab-status/ns#",
-	"xsd": "http://www.w3.org/2001/XMLSchema#"
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "hasBuilding": {
+      "@id": "bot:hasBuilding"
+    },
+    "hasStorey": {
+      "@id": "bot:hasStorey"
+    },
+    "hasSite": {
+      "@id": "bot:hasSite"
+    },
+    "hasSpace": {
+      "@id": "bot:hasSpace"
+    },
+    "hasElement": {
+      "@id": "bot:hasElement"
+    },
+    "Site": {
+      "@id": "bot:Site"
+    },
+    "Building": {
+      "@id": "bot:Building"
+    },
+    "Storey": {
+      "@id": "bot:Storey"
+    },
+    "Space": {
+      "@id": "bot:Space"
+    }
   },
   "@graph": [
     {

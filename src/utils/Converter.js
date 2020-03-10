@@ -1,3 +1,5 @@
+import { retrieveAndParseWoTModel } from './WoTParser.js';
+
 // parses a model and extracts all site->building->storey data
 export const extractSiteData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting site from model", model);
@@ -10,15 +12,16 @@ export const extractSiteData = (model, successCallback, errorCallback, warningCa
 
     var dimensions = extractDimensions(model, errorCallback);
     var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
-    var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownSite", warningCallback);
+    var name = getNodeOrDefault(model, "schema:name", "UnknownSite", warningCallback);
     var buildings = getArrayNodeOrDefault(model, "bot:hasBuilding", [], warningCallback);
-
+    
     var convertedBuildings = [];
     for (var i = 0; i < buildings.length; i++) {
         var convertedBuilding = extractBuildingData(buildings[i], successCallback, errorCallback, warningCallback, infoCallback);
         convertedBuildings.push(convertedBuilding);
     }
 
+    
     return [{ id: id, name: name, area: dimensions, buildings: convertedBuildings }];
 }
 
@@ -33,7 +36,7 @@ const extractBuildingData = (model, successCallback, errorCallback, warningCallb
 
     var dimensions = extractDimensions(model, errorCallback);
     var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
-    var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownBuilding", warningCallback);
+    var name = getNodeOrDefault(model, "schema:name", "UnknownBuilding", warningCallback);
     var storeys = getArrayNodeOrDefault(model, "bot:hasStorey", [], warningCallback);
 
     var convertedStoreys = [];
@@ -56,8 +59,8 @@ const extractStoryData = (model, successCallback, errorCallback, warningCallback
 
     var dimensions = extractDimensions(model, errorCallback);
     var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
-    var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownStorey", warningCallback);
-    var floor = getNodeOrDefault(model, "http://schema.org/floorLevel", "0", warningCallback);
+    var name = getNodeOrDefault(model, "schema:name", "UnknownStorey", warningCallback);
+    var floor = getNodeOrDefault(model, "schema:floorLevel", "0", warningCallback);
     var spaces = getArrayNodeOrDefault(model, "bot:hasSpace", [], warningCallback);
 
     var convertedSpaces = [];
@@ -80,7 +83,7 @@ const extractSpaceData = (model, successCallback, errorCallback, warningCallback
 
     var dimensions = extractDimensions(model, errorCallback);
     var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
-    var name = getNodeOrDefault(model, "http://schema.org/name", "UnknownSpace", warningCallback);
+    var name = getNodeOrDefault(model, "schema:name", "UnknownSpace", warningCallback);
     var elements = getArrayNodeOrDefault(model, "bot:hasElement", [], warningCallback);
 
     var convertedElements = [];
@@ -105,6 +108,7 @@ const extractElementData = (model, successCallback, errorCallback, warningCallba
     var id = getNodeOrDefault(model, "@id", "", warningCallback);
 
     warningCallback("Now I have to resolve that...", id);
+    retrieveAndParseWoTModel(id, errorCallback, warningCallback, infoCallback)
     
     return { id: id, position: position };
 }

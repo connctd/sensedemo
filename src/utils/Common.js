@@ -1,0 +1,82 @@
+// replace context urls with the ones point to our own backend to avoid cors issues
+/*export const localizeUrls = (model, errorCallback, warningCallback, infoCallback) => {
+    if (model === undefined) {
+        warningCallback("No context value found", model);
+        return "";
+    }
+
+    // context can be just a plain string
+    if (typeof model === 'string' || model instanceof String) {
+        if (model.startsWith("http://") || model.startsWith("https://")) {
+            model = asInternalURL(model, "schema");
+        }
+    } else if (Array.isArray(model)) {
+        // get length of model
+        for (var i = 0; i < model.length; i++) {
+            model[i] = localizeUrls(model[i], errorCallback, warningCallback, infoCallback);
+        }
+    } else {
+        // model is an object - go through each key value pair
+        var keys = Object.keys(model);
+        for (var j = 0; j < keys.length; j++) {
+            model[keys[j]] = localizeUrls(model[keys[j]], errorCallback, warningCallback, infoCallback);
+        }
+    }
+
+    return model;
+}*/
+
+// can be used to wrap a remote endpoint into local service call which then gets redirected
+export const asInternalURL = (input, prefix) => {
+    var url = window.location.href;
+    var arr = url.split("/");
+    var encoded = Buffer.from(input).toString('base64');
+
+    if (url.includes("localhost")) {
+        return "http://localhost:8080/api/" + prefix + "?data=" + encodeURIComponent(encoded) + "#";
+    } else {
+        return arr[0] + "//" + arr[2] + "/api/" + prefix + "?data=" + encodeURIComponent(encoded) + "#";
+    }
+}
+
+// can be used to load remote json objects for schemata or wot tds
+export const loadDocument = async (url, headers) => {
+    var resp = await fetch(url, {
+        headers: headers,
+    });
+
+    var jsonResp = await resp.json();
+    return jsonResp;
+}
+
+
+// schema this service is working with
+export var locationsContext = [
+    {
+        "schema": "http://schema.org/"
+    },
+    {
+        "bot": "https://w3id.org/bot#"
+    },
+    {
+        "wot": "https://www.w3.org/2019/wot/td#"
+    },
+    {
+        "geo": "https://purl.org/geojson/vocab#"
+    }
+];
+
+export var wotContext = [
+    {
+        "schema": "https://schema.org/#"
+    },
+    {
+        "wot": "https://www.w3.org/2019/wot/td#"
+    },
+    {
+        "iot": "http://iotschema.org/"
+    },
+    {
+        "unit": "http://qudt.org/vocab/unit/"
+    }
+];
