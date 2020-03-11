@@ -50,6 +50,52 @@ export const loadDocument = async (url, headers) => {
 }
 
 
+// resolves model[field] or returns default if not found
+export const getNodeOrDefault = (model, field, defaultValue, warningCallback) => {
+    var fieldValue = model[field];
+    if (fieldValue === undefined) {
+        warningCallback("Node has no field " + field, model);
+        return defaultValue;
+    }
+
+    return fieldValue;
+}
+
+export const getArrayNodeOrDefault = (model, field, defaultValue, warningCallback) => {
+    var fieldValue = model[field];
+    if (fieldValue === undefined) {
+        warningCallback("Node has no field " + field, model);
+        return defaultValue;
+    }
+
+    if (!Array.isArray(fieldValue)) {
+        return [fieldValue];
+    }
+
+    return fieldValue;
+}
+
+// checks if @type is or contains expected type
+export const expectType = (model, expectedType) => {
+    var modelType = model["@type"];
+    if (modelType === undefined) {
+        return false;
+    }
+
+    if (typeof modelType === 'string' || modelType instanceof String) {
+        return (modelType === expectedType);
+    } else if (Array.isArray(modelType)) {
+        for (var i = 0; i < modelType.length; i++) {
+            if (modelType[i] === expectedType) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
 // schema this service is working with
 export var locationsContext = [
     {
@@ -72,6 +118,9 @@ export var wotContext = [
     },
     {
         "wot": "https://www.w3.org/2019/wot/td#"
+    },
+    {
+        "wotmedia": "https://www.w3.org/2019/wot/hypermedia#"
     },
     {
         "iot": "http://iotschema.org/"

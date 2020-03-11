@@ -1,5 +1,5 @@
 import * as jsonld from 'jsonld';
-import { extractSiteData } from './Converter.js';
+import { extractSiteData } from './LocationConverter.js';
 import { loadDocument } from './Common.js';
 import { locationsContext } from './Common.js';
 
@@ -10,7 +10,7 @@ export const parseModel = async (model, successCallback, errorCallback, warningC
     var compactedModel = await getReducedModel(model, successCallback, errorCallback, warningCallback, infoCallback);
 
     if (compactedModel !== undefined) {
-        var extractedModel = extractSiteData(compactedModel, successCallback, errorCallback, warningCallback, infoCallback);
+        var extractedModel = await extractSiteData(compactedModel, successCallback, errorCallback, warningCallback, infoCallback);
         
         if (extractedModel !== undefined) {
             successCallback("Finished", extractedModel);

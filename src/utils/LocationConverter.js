@@ -1,11 +1,12 @@
 import { retrieveAndParseWoTModel } from './WoTParser.js';
+import { getNodeOrDefault, expectType, getArrayNodeOrDefault } from './Common.js';
 
 // parses a model and extracts all site->building->storey data
-export const extractSiteData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+export const extractSiteData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting site from model", model);
 
     // we are expecting a site as root element
-    if (!expectType(model, "bot:Site", errorCallback)) {
+    if (!expectType(model, "bot:Site")) {
         errorCallback("Node has invalid type", model);
         return;
     }
@@ -17,7 +18,7 @@ export const extractSiteData = (model, successCallback, errorCallback, warningCa
     
     var convertedBuildings = [];
     for (var i = 0; i < buildings.length; i++) {
-        var convertedBuilding = extractBuildingData(buildings[i], successCallback, errorCallback, warningCallback, infoCallback);
+        var convertedBuilding = await extractBuildingData(buildings[i], successCallback, errorCallback, warningCallback, infoCallback);
         convertedBuildings.push(convertedBuilding);
     }
 
@@ -25,11 +26,11 @@ export const extractSiteData = (model, successCallback, errorCallback, warningCa
     return [{ id: id, name: name, area: dimensions, buildings: convertedBuildings }];
 }
 
-const extractBuildingData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+const extractBuildingData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting building from model", model);
 
     // we are expecting a site as root element
-    if (!expectType(model, "bot:Building", errorCallback)) {
+    if (!expectType(model, "bot:Building")) {
         errorCallback("Node has invalid type", model);
         return;
     }
@@ -41,18 +42,18 @@ const extractBuildingData = (model, successCallback, errorCallback, warningCallb
 
     var convertedStoreys = [];
     for (var i = 0; i < storeys.length; i++) {
-        var convertedStorey = extractStoryData(storeys[i], successCallback, errorCallback, warningCallback, infoCallback);
+        var convertedStorey = await extractStoryData(storeys[i], successCallback, errorCallback, warningCallback, infoCallback);
         convertedStoreys.push(convertedStorey);
     }
 
     return { id: id, name: name, area: dimensions, storeys: convertedStoreys };
 }
 
-const extractStoryData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+const extractStoryData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting storey from model", model);
 
     // we are expecting a site as root element
-    if (!expectType(model, "bot:Storey", errorCallback)) {
+    if (!expectType(model, "bot:Storey")) {
         errorCallback("Node has invalid type", model);
         return;
     }
@@ -65,18 +66,18 @@ const extractStoryData = (model, successCallback, errorCallback, warningCallback
 
     var convertedSpaces = [];
     for (var i = 0; i < spaces.length; i++) {
-        var convertedSpace = extractSpaceData(spaces[i], successCallback, errorCallback, warningCallback, infoCallback);
+        var convertedSpace = await extractSpaceData(spaces[i], successCallback, errorCallback, warningCallback, infoCallback);
         convertedSpaces.push(convertedSpace);
     }
 
     return { id: id, name: name, level: floor, area: dimensions, rooms: convertedSpaces };
 }
 
-const extractSpaceData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+const extractSpaceData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting space from model", model);
 
     // we are expecting a site as root element
-    if (!expectType(model, "bot:Space", errorCallback)) {
+    if (!expectType(model, "bot:Space")) {
         errorCallback("Node has invalid type", model);
         return;
     }
@@ -88,18 +89,20 @@ const extractSpaceData = (model, successCallback, errorCallback, warningCallback
 
     var convertedElements = [];
     for (var i = 0; i < elements.length; i++) {
-        var convertedElement = extractElementData(elements[i], successCallback, errorCallback, warningCallback, infoCallback);
-        convertedElements.push(convertedElement);
+        var convertedElement = await extractElementData(elements[i], successCallback, errorCallback, warningCallback, infoCallback);
+        if (convertedElement !== undefined) {
+            convertedElements.push(convertedElement);
+        }
     }
 
     return { id: id, name: name, area: dimensions, things: convertedElements };
 }
 
-const extractElementData = (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+const extractElementData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
     infoCallback("Extracting element from model", model);
 
     // we are expecting a site as root element
-    if (!expectType(model, "wot:Thing", errorCallback)) {
+    if (!expectType(model, "wot:Thing")) {
         warningCallback("Node is no wot:Thing. Skipping", model);
         return;
     }
@@ -107,35 +110,14 @@ const extractElementData = (model, successCallback, errorCallback, warningCallba
     var position = extractPosition(model, errorCallback);
     var id = getNodeOrDefault(model, "@id", "", warningCallback);
 
-    warningCallback("Now I have to resolve that...", id);
-    retrieveAndParseWoTModel(id, errorCallback, warningCallback, infoCallback)
-    
-    return { id: id, position: position };
-}
+    var thing = await retrieveAndParseWoTModel(id, errorCallback, warningCallback, infoCallback);
 
-// resolves model[field] or returns default if not found
-const getNodeOrDefault = (model, field, defaultValue, warningCallback) => {
-    var fieldValue = model[field];
-    if (fieldValue === undefined) {
-        warningCallback("Node has no field " + field, model);
-        return defaultValue;
+    if (thing === undefined) {
+        warningCallback("Ignoring wot:Thing", model);
+        return;
     }
 
-    return fieldValue;
-}
-
-const getArrayNodeOrDefault = (model, field, defaultValue, warningCallback) => {
-    var fieldValue = model[field];
-    if (fieldValue === undefined) {
-        warningCallback("Node has no field " + field, model);
-        return defaultValue;
-    }
-
-    if (!Array.isArray(fieldValue)) {
-        return [fieldValue];
-    }
-
-    return fieldValue;
+    return { id: id, position: position, details: thing };
 }
 
 // searches for geo coordinates and builds up an array of points
@@ -196,33 +178,3 @@ const extractPosition = (model, errorCallback) => {
 
     return { x: coordinates[0], y: coordinates[1] };
 }
-
-// checks if @type is or contains expected type
-const expectType = (model, expectedType) => {
-    var modelType = model["@type"];
-    if (modelType === undefined) {
-        return false;
-    }
-
-    if (typeof modelType === 'string' || modelType instanceof String) {
-        return (modelType === expectedType);
-    } else if (Array.isArray(modelType)) {
-        for (var i = 0; i < modelType.length; i++) {
-            if (modelType[i] === expectedType) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-// takes an internal address and base64 decodes the location part
-/*
-const asExternalURL = (input) => {
-    var arr = input.split("/api/schema/");
-    var urlDecoded = decodeURIComponent(arr[1]);
-    var decoded = Buffer.from(urlDecoded, 'base64').toString('ascii');
-    return decoded;
-}
-*/

@@ -1,20 +1,19 @@
 import * as jsonld from 'jsonld';
 import { asInternalURL } from './Common.js';
 import { wotContext } from './Common.js';
+import { extractThing } from './WoTConverter.js';
 
 export const retrieveAndParseWoTModel = async (wotURL, errorCallback, warningCallback, infoCallback) => {
     var url = asInternalURL(wotURL, "backend");
     var resp = await fetch(url);
-    var jsonResp = await resp.json();
-
+    
     if (resp.status !== 200) {
         console.error(resp);
         errorCallback("Failed to resolve WoT TD", wotURL);
         return;
     }
 
-    console.log("Resolved wot has context");
-    console.log(jsonResp["@context"][0]);
+    var jsonResp = await resp.json();
 
     return parseModel(jsonResp, errorCallback, warningCallback, infoCallback);
 }
@@ -24,7 +23,11 @@ export const parseModel = async (model, errorCallback, warningCallback, infoCall
     var compactedModel = await getReducedModel(model, errorCallback, warningCallback, infoCallback);
 
     if (compactedModel !== undefined) {
-        
+        var thing = extractThing(compactedModel, errorCallback, warningCallback, infoCallback);
+        if (thing !== undefined) {
+            infoCallback("Thing was extracted", thing);
+            return thing;
+        }
     }
 };
 
@@ -34,9 +37,6 @@ const getReducedModel = async (model, errorCallback, warningCallback, infoCallba
         errorCallback("Model has no context", model);
         return;
     }
-
-    // let all context uris point to special endpoint
-    console.log("Resolved wot has context");
 
     infoCallback("Applied context modifications", model);
 

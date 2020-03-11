@@ -9,7 +9,7 @@ export default class Thing extends React.Component {
 
         this.state = { data: this.props.data, reachable: false, fillColor: "#CCCCCC" }
         this.underlyingThing = React.createRef();
-
+        
         this.resolveThingDescription = this.resolveThingDescription.bind(this);
         this.responseReceived = this.responseReceived.bind(this);
     }
@@ -22,38 +22,41 @@ export default class Thing extends React.Component {
         clearInterval(this.interval);
     }
 
-    resolveThingDescription() {
-        if (this.state.data.href == null || this.state.data.href === "") {
-            return;
-        }
-
-        var xhr = new XMLHttpRequest()
-        xhr.addEventListener('load', this.responseReceived);
-        xhr.open('GET', this.state.data.href);
-        
-        xhr.setRequestHeader("X-External-Subject-ID", "default");
-        xhr.send();
+    async resolveThingDescription() {
+        var resp = await fetch(this.state.data.details.stateURL);
+        this.responseReceived(resp);
     }
 
-    responseReceived(res) {
+    async responseReceived(resp) {
         var newState = this.state;
 
-        if (res.target.status !== 200) {
-            newState.reachable = false;
-            newState.fillColor = "#CCCCCC";
-        }  else {
-            newState.reachable = true;
-            newState.lastState = JSON.parse(res.target.response);
+        if (resp.status === 200) {
+            var jsonResp = await resp.json();
 
-            // TODO this depends on the device type and property
-            if (newState.lastState.value) {
+            newState.reachable = true;
+            if (!this.state.reachable) {
+                this.setState(newState);
+            }
+
+            newState.lastState = jsonResp;
+
+            if (newState.lastState.value && newState.fillColor !== "orange") {
                 newState.fillColor = "orange";
-            } else {
+                this.setState(newState);
+            } else if (!newState.lastState.value && newState.fillColor !== "black") {
                 newState.fillColor = "black";
+                this.setState(newState);
             }
         }
-        
-        this.setState(newState);
+        else {
+            if (this.state.reachable) {
+                console.log("Failed to resolve " + this.state.data.stateURL + " Bad status code " + resp.status);
+                if (this.state.reachable) {
+                    newState.reachable = false;
+                    this.setState(newState);
+                }
+            }
+        }
     }
 
     hover(e) {
@@ -66,6 +69,7 @@ export default class Thing extends React.Component {
 
     render() {
         let data = this.props.data;
+
         let elementPosition = getPositionWithOffset(data.position, this.props.offset)
         
         return (

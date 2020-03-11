@@ -256,6 +256,22 @@ export default class ModelView extends React.Component {
                                                 "@type": "geo:Point",
                                                 "geo:coordinates": [1.0, 2.0]
                                             },
+                                        },
+                                        {
+                                            "@type": "wot:Thing",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/41be9037-d802-4509-895b-ddac5452db53",
+                                            "geo:geometry": {
+                                                "@type": "geo:Point",
+                                                "geo:coordinates": [0.0, 50.0]
+                                            }
+                                        },
+                                        {
+                                            "@type": "wot:Thing",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
+                                            "geo:geometry": {
+                                                "@type": "geo:Point",
+                                                "geo:coordinates": [30.0, 30.0]
+                                            }
                                         }
                                     ]
                                 },
