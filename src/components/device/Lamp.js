@@ -1,11 +1,48 @@
 import React from 'react';
 
 export default class Lamp extends React.Component {
+  constructor(props) {
+      super(props);
+
+      this.state = { data: this.props.data, connected: false, cbConnected: this.props.callbackConnected, fillColor: "#000000" }
+      
+      this.resolveThingDescription = this.resolveThingDescription.bind(this);
+  }
+
+  componentDidMount() {
+      this.interval = setInterval(this.resolveThingDescription, 1000);
+  }
+
+  componentWillUnmount() {
+      clearInterval(this.interval);
+  }
+
+  async resolveThingDescription() {
+      var resp = await fetch(this.state.data.details.stateURL);
+      var newState = this.state;
+
+      if (resp.status === 200) {
+        this.state.cbConnected(true);
+        var jsonResp = await resp.json();
+        
+        if (jsonResp.value) {
+          newState.fillColor = "#000000";
+        } else {
+          newState.fillColor = "orange";
+        }
+
+        this.setState(newState);
+      }
+      else {
+        this.state.cbConnected(false);  
+      }
+  }
+
   render() {
     return (
       <svg xmlns="http://www.w3.org/2000/svg"
         width={this.props.width} height={this.props.height}
-        x={this.props.x} y={this.props.y} fill={this.props.fill}
+        x={this.props.x} y={this.props.y} fill={this.state.fillColor}
             viewBox="0 0 390 390">
           <path id="Auswahl" d="M 190.00,0.42
                   C 190.00,0.42 177.00,1.17 177.00,1.17

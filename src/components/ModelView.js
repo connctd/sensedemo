@@ -105,7 +105,7 @@ export default class ModelView extends React.Component {
                                             "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/bla",
                                             "geo:geometry": {
                                                 "@type": "geo:Point",
-                                                "geo:coordinates": [1.0, 2.0]
+                                                "geo:coordinates": [2.0, 2.0]
                                             },
                                         }
                                     ]
@@ -254,7 +254,7 @@ export default class ModelView extends React.Component {
                                             "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
                                             "geo:geometry": {
                                                 "@type": "geo:Point",
-                                                "geo:coordinates": [1.0, 2.0]
+                                                "geo:coordinates": [2.0, 2.0]
                                             },
                                         },
                                         {
@@ -270,7 +270,7 @@ export default class ModelView extends React.Component {
                                             "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
                                             "geo:geometry": {
                                                 "@type": "geo:Point",
-                                                "geo:coordinates": [30.0, 30.0]
+                                                "geo:coordinates": [2.0, 100.0]
                                             }
                                         }
                                     ]
