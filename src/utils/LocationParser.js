@@ -1,6 +1,6 @@
 import * as jsonld from 'jsonld';
 import { extractSiteData } from './LocationConverter.js';
-import { loadDocument } from './Common.js';
+import { loadDocument, asInternalURL } from './Common.js';
 import { locationsContext } from './Common.js';
 
 // loads remote model and transforms it to a representation this visualizer can work with
@@ -32,10 +32,10 @@ const getReducedModel = async (model, successCallback, errorCallback, warningCal
             console.log("Separately resolving bot context");
             return {
                 contextUrl: null,
-                document: await loadDocument("http://localhost:8080/api/schema?data=aHR0cHM6Ly93M2lkLm9yZy9ib3Qj#", {
+                document: await loadDocument(asInternalURL("https://w3id.org/bot#", "schema"), {
                     'Accept': 'application/ld+json'
                 }),
-                documentUrl: "http://localhost:8080/api/schema?data=aHR0cHM6Ly93M2lkLm9yZy9ib3Qj#"
+                documentUrl: asInternalURL("https://w3id.org/bot#", "schema")
             };
         }
     
