@@ -26,9 +26,9 @@ export default class Lamp extends React.Component {
         var jsonResp = await resp.json();
         
         if (jsonResp.value) {
-          newState.fillColor = "#000000";
+          newState.fillColor = "#FF6E04";
         } else {
-          newState.fillColor = "orange";
+          newState.fillColor = "#000000";
         }
 
         this.setState(newState);

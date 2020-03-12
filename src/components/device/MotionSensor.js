@@ -26,9 +26,9 @@ export default class MotionSensor extends React.Component {
         var jsonResp = await resp.json();
 
         if (jsonResp.value) {
-          newState.fillColor = "#000000";
+          newState.fillColor = "#11CC66";
         } else {
-          newState.fillColor = "green";
+          newState.fillColor = "#000000";
         }
 
         this.setState(newState);
@@ -44,7 +44,7 @@ export default class MotionSensor extends React.Component {
         width={this.props.width} height={this.props.height}
         x={this.props.x} y={this.props.y} stroke={this.state.fillColor}
             viewBox="0 0 50 50">
-          <path id="Pfad #2"
+          <path id="Pfad #2" strokeWidth="3"
         fill="none"
         d="M 8.26,42.48
            C 7.33,41.68 7.25,40.38 7.25,40.38
