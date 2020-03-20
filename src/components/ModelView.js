@@ -7,13 +7,15 @@ import Algorithm from './algorithm/Algorithm.js';
 import ExpandableObject from './control/ExpandableObject.js';
 import { parseModel } from '../utils/LocationParser.js';
 import { findPositionTracker } from '../utils/WoTConverter.js';
+import { asInternalURL } from '../utils/Common.js';
+
 
 export default class ModelView extends React.Component {
     constructor(props) {
         super(props);
         let inputModel = {
             "@context": [
-                "https://schema.org/",
+                "http://schema.org/",
                 {
                     "bot": "https://w3id.org/bot#"
                 },
@@ -699,8 +701,11 @@ export default class ModelView extends React.Component {
             body: JSON.stringify({ "value": pos.y.toString() })
         }
 
-        var respX = await fetch("http://localhost:8080/api/backend?data=aHR0cHM6Ly9hcGkuY29ubmN0ZC5pby9hcGkvdjEvdGhpbmdzL2EzNTljZTkzLTA5OGMtNDFlYy05ZWYxLThjMjg0NmQyNThmNy9jb21wb25lbnRzL3RyYWNrZXIvcHJvcGVydGllcy94", xconfig);
-        var respY = await fetch("http://localhost:8080/api/backend?data=aHR0cHM6Ly9hcGkuY29ubmN0ZC5pby9hcGkvdjEvdGhpbmdzL2EzNTljZTkzLTA5OGMtNDFlYy05ZWYxLThjMjg0NmQyNThmNy9jb21wb25lbnRzL3RyYWNrZXIvcHJvcGVydGllcy95", yconfig);
+        var xURL = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/x";
+        var yURL = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/y";
+        
+        var respX = await fetch(asInternalURL(xURL, "backend"), xconfig);
+        var respY = await fetch(asInternalURL(yURL, "backend"), yconfig);
         
         if (respX.status !== 204 && respY.status !== 204) {
             console.error("Bad response");
