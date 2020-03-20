@@ -2,7 +2,6 @@ import React from 'react';
 import '../../App.css';
 import Lamp from '../device/Lamp.js';
 import Unknown from '../device/Unknown.js';
-import Position from '../device/Position.js';
 import MotionSensor from '../device/MotionSensor.js';
 import { getPositionWithOffset } from '../../utils/Positioning.js'
 
@@ -52,15 +51,7 @@ export default class Thing extends React.Component {
                         height={20}
                     />;
         } else if (this.props.data.details.type === 'position') {
-            node = <Position
-                        data={this.state.data}
-                        callbackConnected={this.updateConnected}
-                        key={data.id}
-                        x={elementPosition.x}
-                        y={elementPosition.y}
-                        width={20}
-                        height={20}
-                    />;
+            node = null;
         } else {
             node = <Unknown
                         data={this.state.data}
@@ -80,7 +71,7 @@ export default class Thing extends React.Component {
                 </svg>
 
                 <text
-                    visibility={this.state.connected ? 'hidden' : 'visible'}
+                    visibility={this.state.connected || node == null ? 'hidden' : 'visible'}
                     x={elementPosition.x + (20 / 2)}
                     y={elementPosition.y + (20 / 2+1)}
                     className="ThingText">

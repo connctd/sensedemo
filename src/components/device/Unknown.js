@@ -1,5 +1,4 @@
 import React from 'react';
-import { getPositionWithOffset } from '../../utils/Positioning.js'
 
 export default class Unknown extends React.Component {
   constructor(props) {

@@ -5,15 +5,27 @@ import { extractThing } from './WoTConverter.js';
 
 export const retrieveAndParseWoTModel = async (wotURL, errorCallback, warningCallback, infoCallback) => {
     var url = asInternalURL(wotURL, "backend");
-    var resp = await fetch(url);
+    var resp;
+    try {
+        resp = await fetch(url);
+    } catch(e) {
+        errorCallback("Failed to resolve WOT TD", wotURL);
+        return;
+    }
     
     if (resp.status !== 200) {
         console.error(resp);
-        errorCallback("Failed to resolve WoT TD", wotURL);
+        errorCallback("Failed to resolve WoT TD. Invalid status code", wotURL);
         return;
     }
 
-    var jsonResp = await resp.json();
+    var jsonResp
+    try {
+        jsonResp = await resp.json();
+    } catch (e) {
+        errorCallback("Failed to parse WOT TD", wotURL);
+        return;
+    }    
 
     return parseModel(jsonResp, errorCallback, warningCallback, infoCallback);
 }

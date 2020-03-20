@@ -112,3 +112,27 @@ const extractPositionTracker = (model, errorCallback, warningCallback, infoCallb
 
     return { "id": id, "name": name, "type": "position", "xURL": asInternalURL(xURL, "backend"), "yURL": asInternalURL(yURL, "backend"), "zURL": asInternalURL(zURL, "backend") };
 }
+
+// given a fully converted model search for a thing with type position
+export const findPositionTracker = (model) => {
+    for (var sID = 0; sID < model.length; sID++) {
+        var currSite = model[sID];
+        for (var bID = 0; bID < currSite.buildings.length; bID++) {
+            var currBuilding = currSite.buildings[bID];
+            for (var eID = 0; eID < currBuilding.storeys.length; eID++) {
+                var currStorey = currBuilding.storeys[eID];
+                for (var rID = 0; rID < currStorey.rooms.length; rID++) {
+                    var currRoom = currStorey.rooms[rID];
+                    for (var tID = 0; tID < currRoom.things.length; tID++) {
+                        var currThing = currRoom.things[tID];
+                        if (currThing.details.type === "position") {
+                            return currThing;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return;
+}

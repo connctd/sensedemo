@@ -1,6 +1,7 @@
 import React from 'react';
 import Site from './Site.js'
 import User from './User.js'
+import Pointer from './Pointer.js'
 import { getRightBottomCorner } from '../../utils/Positioning.js'
 import '../../App.css';
 
@@ -11,25 +12,43 @@ export default class Canvas extends React.Component {
         this.setDimensions = this.setDimensions.bind(this);
         this.onCanvasClick = this.onCanvasClick.bind(this);
 
-        this.state = { showUser: false, userPosition: {x: 0, y: 0}, width: this.props.width, height: this.props.height };
+        this.state = { showUser: false, userPosition: {x: 0, y: 0}, scale: this.props.scale };
     }
 
-    setDimensions(width, height) {
+    setDimensions(scale) {
         var newState = this.state;
-
-        newState.width = width;
-        newState.height = height;
-
+        newState.scale = scale;
         this.setState(newState);
     }
 
     onCanvasClick(event) {
-        console.log(event.clientX);
+        var canvasViewbox = event.currentTarget.viewBox.baseVal;
+        // max coords of sites
+        var maxSiteX = canvasViewbox.width;
+        var maxSiteY = canvasViewbox.height;
+
+        // how this is shown on screen
+        var shownX = event.currentTarget.width.baseVal.value;
+        var shownY = event.currentTarget.height.baseVal.value;
+
+        // ui is stretching the sites -> calculate scale
+        var scaleX = maxSiteX/shownX;
+        var scaleY = maxSiteY/shownY;
+
+        // site is centered: remove offset left and top
+        var rect = event.currentTarget.getBoundingClientRect()
+        
+        var x = (event.clientX - rect.left) * scaleX;
+        var y = (event.clientY - rect.top) * scaleY;
+        
         var newState = this.state;
-        newState.userPosition = { x: event.clientX, y: event.clientY};
+
+        newState.userPosition = { x: x / 100 * this.state.scale, y: y / 100 * this.state.scale};
+
+        this.props.fakePositionSetHandler(newState.userPosition);
+
         this.setState(newState);
     }
-
 
     render() {
         let data = this.props.model;
@@ -59,9 +78,16 @@ export default class Canvas extends React.Component {
         )
 
         return (
-            <svg onClick={this.onCanvasClick} width={this.state.width} height={this.state.height} viewBox={viewBox}>
+            <svg onClick={this.onCanvasClick} width={this.state.scale + "%"} height={this.state.scale + "%"} viewBox={viewBox}>
                 {renderedSites}
-                <User className={this.state.showUser ? 'User' : 'User Hidden'} position={this.state.userPosition} />
+                <Pointer className={this.state.showUser ? 'User' : 'User Hidden'} position={this.state.userPosition} />
+                <User
+                    data={this.props.model}
+                    key="userpos"
+                    x={0}
+                    y={0}
+                    width={20}
+                    height={20}/>
             </svg>
         )
     }

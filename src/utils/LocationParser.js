@@ -49,10 +49,7 @@ const getReducedModel = async (model, successCallback, errorCallback, warningCal
     };
     
     jsonld.documentLoader = customLoader;
-
-    // let all context uris point to special endpoint
-    //model["@context"] = localizeUrls(model["@context"], errorCallback, warningCallback, infoCallback);
-
+    
     infoCallback("Applied context modifications", model);
 
     try {

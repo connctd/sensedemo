@@ -19,7 +19,7 @@ export default class Options extends React.Component {
 
         this.setState(newState);
 
-        this.props.canvasRef.current.setDimensions(newState.currZoom + "%", newState.currZoom + "%");
+        this.props.canvasRef.current.setDimensions(newState.currZoom);
     }
 
     zoomDecrease(event) {
@@ -28,7 +28,7 @@ export default class Options extends React.Component {
 
         this.setState(newState);
 
-        this.props.canvasRef.current.setDimensions(newState.currZoom + "%", newState.currZoom + "%");
+        this.props.canvasRef.current.setDimensions(newState.currZoom);
     }
 
     toggleModelEditor() {

@@ -4,17 +4,6 @@ import Thing from './Thing.js'
 import '../../App.css';
 
 export default class Room extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.onRoomClick = this.onRoomClick.bind(this);
-    }
-
-    onRoomClick() {
-        //alert(this.props.data.id);
-        console.log(this.props.data.id)
-    }
-
     render() {
         let data = this.props.data;
         let offset = this.props.offset;
@@ -29,7 +18,7 @@ export default class Room extends React.Component {
 
         let points = convertVectorArrayToPointsString(data.area, offset);
         return (
-            <svg onClick={this.onRoomClick}>
+            <svg>
                 <defs>
                     <pattern id="background" patternUnits="userSpaceOnUse" width="148" height="120">
                         <image href="/images/floor.jpg" x="0" y="0" width="148" height="120" />
