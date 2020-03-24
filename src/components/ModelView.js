@@ -15,7 +15,7 @@ export default class ModelView extends React.Component {
         super(props);
         let inputModel = {
             "@context": [
-                "https://schema.org/",
+                "http://schema.org/",
                 {
                     "bot": "https://w3id.org/bot#"
                 },

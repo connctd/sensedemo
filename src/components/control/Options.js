@@ -6,10 +6,11 @@ export default class Options extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { currZoom: this.props.defaultZoom, editorVisible: false };
+        this.state = { currZoom: this.props.defaultZoom, editorVisible: false, detectionMode: "none" };
 
         this.zoomIncrease = this.zoomIncrease.bind(this);
         this.zoomDecrease = this.zoomDecrease.bind(this);
+        this.switchDetectionMode = this.switchDetectionMode.bind(this);
         this.toggleModelEditor = this.toggleModelEditor.bind(this);
     }
 
@@ -29,6 +30,14 @@ export default class Options extends React.Component {
         this.setState(newState);
 
         this.props.canvasRef.current.setDimensions(newState.currZoom);
+    }
+
+    switchDetectionMode(event) {
+        var newState = this.state;
+        newState.detectionMode = event.target.value;
+        this.setState(newState);
+        
+        this.props.canvasRef.current.switchDetectionMode(event.target.value);
     }
 
     toggleModelEditor() {
@@ -55,6 +64,14 @@ export default class Options extends React.Component {
                 <button className="OptionsButton" onClick={this.toggleModelEditor}>Model<br />&lt;&gt;</button>
                 <br /><br />
                 <button className="OptionsButton" onClick={this.exit}>Exit<br />&times;</button>
+                <br /><br />
+                Detection
+                <br /><br />
+                <select value={this.state.detectionMode} onChange={this.switchDetectionMode}>
+                    <option value="none">None</option>
+                    <option value="userpos">UserPos</option>
+                    <option value="sensors">Sensors</option>
+                </select>
 
                 <div className={this.state.editorVisible ? 'EditModelView' : 'EditModelView Hidden'}>
                     <ModelEditor model={this.props.model} modelChangeHandler={this.props.modelChangeHandler} cancelHandler={this.toggleModelEditor}/>

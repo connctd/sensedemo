@@ -28,6 +28,7 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
     var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
     var name = getNodeOrDefault(model, "schema:name", "UnknownThing", warningCallback);
     var properties = getArrayNodeOrDefault(model, "wot:hasPropertyAffordance", [], warningCallback);
+    var actions = getArrayNodeOrDefault(model, "wot:hasActionAffordance", [], warningCallback);
 
     // search for the relevant property that reflects the on off state
     var stateURL = "";
@@ -42,7 +43,26 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
         }
     }
 
-    return { "id": id, "name": name, "type": "lamp", "stateURL": asInternalURL(stateURL, "backend")};
+    var switchURL = "";
+    for (var currActionIndex = 0; currActionIndex < actions.length; currActionIndex++) {
+        var currAction = actions[currActionIndex];
+
+        if (expectType(currAction, "iot:TurnOn")) {
+            var form = getNodeOrDefault(currAction, "wot:hasForm", {}, warningCallback);
+            var input = getNodeOrDefault(currAction, "wot:hasInputSchema", {}, warningCallback);
+            var props = getArrayNodeOrDefault(input, "wotschema:properties", [], warningCallback);
+            var target = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
+
+            if (props.length != 1) {
+                console.log("Sorting out action " + currAction["@index"] +" since it doesn't look like a simple turn on/off action");
+                continue;
+            }
+
+            switchURL = getNodeOrDefault(target, "@id", "", warningCallback);
+        }
+    }
+
+    return { "id": id, "name": name, "type": "lamp", "stateURL": asInternalURL(stateURL, "backend"), "switchURL": asInternalURL(switchURL, "backend")};
 }
 
 const isMotionSensor = (model) => {

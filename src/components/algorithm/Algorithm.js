@@ -117,15 +117,71 @@ export default class Algorithm extends React.Component {
         return { x: 0, y: 0 };
     }
 
-    onUserInRoom(currRoom) {
-        if (currRoom !== this.state.previousRoom) {
+    async onUserInRoom(room) {
+        if (room !== this.state.previousRoom) {
             if (this.state.previousRoom !== undefined) {
-                console.log("User has changed room from " + this.state.previousRoom.name + " to " + currRoom.name);
+                console.log("User has changed room from " + this.state.previousRoom.name + " to " + room.name);
+                this.turnOffLightsInRoom(this.state.previousRoom);
+                this.turnOnLightsInRoom(room);
+            } else {
+                this.turnOnLightsInRoom(room);
             }
 
             var newState = this.state;
-            newState.previousRoom = currRoom;
+            newState.previousRoom = room;
             this.setState(newState);
+        }
+    }
+
+    async turnOnLightsInRoom(room) {
+        console.log("Turning on lights in "+room.name);
+        console.log(room);
+        for (var i = 0; i < room.things.length; i++ ) {
+            var currThing = room.things[i].details;
+            if (currThing.type !== "lamp") {
+                continue;
+            }
+
+            if (currThing.switchURL === "") {
+                console.log("Light has no switch url");
+                continue;
+            }
+
+            this.setLightState(currThing.switchURL, true);
+        }
+    }
+
+    async turnOffLightsInRoom(room) {
+        console.log("Turning off lights in " + room.name);
+        
+        for (var i = 0; i < room.things.length; i++) {
+            var currThing = room.things[i].details;
+            if (currThing.type !== "lamp") {
+                continue;
+            }
+
+            if (currThing.switchURL === "") {
+                console.log("Light has no switch url");
+                continue;
+            }
+
+            this.setLightState(currThing.switchURL, false);
+        }
+    }
+
+    async setLightState(url, state) {
+        var resp = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"on": state})
+        });
+
+        var newState = this.state;
+
+        if (resp.status !== 200) {
+            console.error("Failed to set light state of "+url);   
         }
     }
 
@@ -139,8 +195,9 @@ export default class Algorithm extends React.Component {
 
     render() {
         return (
-            <div>
-                &nbsp;
+            <div className="AlgoView">
+                <h1>Evaluation</h1>
+                User is in place {this.state.previousRoom !== undefined ? this.state.previousRoom.name : "UNKNOWN" }
             </div>
         )
     }

@@ -41,9 +41,28 @@ export const asInternalURL = (input, prefix) => {
 
 // can be used to load remote json objects for schemata or wot tds
 export const loadDocument = async (url, headers) => {
-    var resp = await fetch(url, {
-        headers: headers,
-    });
+    var resp;
+    try {
+        resp = await fetch(url, {
+            redirect: "follow",
+            headers: headers,
+        });
+    } catch(err) {
+        console.error("Failed to resolve "+ url +". Reason:" + err);
+    }
+
+    if (resp === undefined) {
+        console.log("Trying to use own backend as fallback");
+        
+        try {
+            resp = await fetch(asInternalURL(url, "schema"), {
+                redirect: "follow",
+                headers: headers,
+            });
+        } catch (err) {
+            console.error("Fallback has failed");
+        }
+    }
 
     var jsonResp = await resp.json();
     return jsonResp;
@@ -121,6 +140,9 @@ export var wotContext = [
     },
     {
         "wotmedia": "https://www.w3.org/2019/wot/hypermedia#"
+    },
+    {
+        "wotschema": "https://www.w3.org/2019/wot/json-schema#"
     },
     {
         "iot": "http://iotschema.org/"

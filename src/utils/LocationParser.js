@@ -27,7 +27,6 @@ const getReducedModel = async (model, successCallback, errorCallback, warningCal
 
     // change the default document loader
     const customLoader = async (url, options) => {
-        console.log(url);
         if (url === "https://w3id.org/bot#") {
             console.log("Separately resolving bot context");
             return {

@@ -12,7 +12,7 @@ export default class Canvas extends React.Component {
         this.setDimensions = this.setDimensions.bind(this);
         this.onCanvasClick = this.onCanvasClick.bind(this);
 
-        this.state = { showUser: false, userPosition: {x: 0, y: 0}, scale: this.props.scale };
+        this.state = { showUser: false, userPosition: {x: 0, y: 0}, scale: this.props.scale, allowPlaceUser: false };
     }
 
     setDimensions(scale) {
@@ -21,7 +21,23 @@ export default class Canvas extends React.Component {
         this.setState(newState);
     }
 
+    switchDetectionMode(newMode) {
+        var newState = this.state;
+
+        if (newMode == "userpos") {
+            newState.allowPlaceUser = true;
+        } else {
+            newState.allowPlaceUser = false;
+        }
+        
+        this.setState(newState);
+    }
+
     onCanvasClick(event) {
+        if (!this.state.allowPlaceUser) {
+            return;
+        }
+
         var canvasViewbox = event.currentTarget.viewBox.baseVal;
         // max coords of sites
         var maxSiteX = canvasViewbox.width;

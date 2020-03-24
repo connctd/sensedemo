@@ -172,16 +172,31 @@ body {
   font-size: 12px;
 }
 
-.LogView {
-  margin: 0 auto;
+.AlgoView {
+  
   text-align: left;
+  float:left;
   background-color: white;
   height: 100%;
-  width: 70%;
+  width: 30%;
   padding-left: 20px;
   padding-top: 2px;
   padding-bottom: 10px;
   border-radius: 10px;
+}
+
+.LogView {
+  text-align: left;
+  float:left;
+  background-color: white;
+  height: 100%;
+  width: 60%;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .Log {
