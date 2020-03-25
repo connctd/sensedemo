@@ -1,30 +1,31 @@
 import React from 'react';
-import ClassifyPoint from 'robust-point-in-polygon';
 import '../../App.css';
 import { getOrigin } from '../../utils/Positioning.js'
+import { EventTypeMotionDetected, CoordinateRelationAbsolute, CoordinateRelationRelative } from '../../utils/Events.js'
+import ClassifyPoint from 'robust-point-in-polygon';
 
-export default class Algorithm extends React.Component {
+/*
+    This rules switches lights in a room if motion was detected in a room
+*/
+export default class ControlLights extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { positionThing: undefined, rooms: [], previousRoom: undefined };
+        this.state = { rooms: [], previousRoom: undefined };
 
         this.evaluateModel = this.evaluateModel.bind(this);
-        this.checkRule = this.checkRule.bind(this);
-        this.resolveThing = this.resolveThing.bind(this);
         this.onUserInRoom = this.onUserInRoom.bind(this);
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.model !== this.props.model) {
-            console.log("Input model has changed");
             this.evaluateModel();
+            this.props.eventBusRef.current.subscribe(this);
         }
     }
 
-    // searches for thing that reflects user pos
     evaluateModel() {
-        console.log("Reevaluating model");
+        console.log("Rule is searching for lights in all rooms");
 
         var newState = this.state;
 
@@ -38,7 +39,7 @@ export default class Algorithm extends React.Component {
             for (var bID = 0; bID < currSite.buildings.length; bID++) {
                 var currBuilding = currSite.buildings[bID];
                 var storeyOffset = getOrigin(currBuilding.area, buildingOffset);
-                
+
                 for (var eID = 0; eID < currBuilding.storeys.length; eID++) {
                     var currStorey = currBuilding.storeys[eID];
                     var roomOffset = getOrigin(currStorey.area, storeyOffset);
@@ -57,15 +58,19 @@ export default class Algorithm extends React.Component {
                         }
 
                         // set absolute room coords so algo has less work
-                        var polygon = [];
+                        var polygonAbsolute = [];
+                        var polygonRelative = [];
                         for (var cID = 0; cID < currRoom.area.length; cID++) {
                             var coords = currRoom.area[cID];
-                            var pair = [coords.x + roomOffset.x, coords.y + roomOffset.y];
-                            
-                            polygon.push(pair);
+                            var pairAbs = [coords.x + roomOffset.x, coords.y + roomOffset.y];
+                            var pairRel = [coords.x, coords.y];
+
+                            polygonAbsolute.push(pairAbs);
+                            polygonRelative.push(pairRel);
                         }
 
-                        currRoom.polygon = polygon;
+                        currRoom.polygonAbsolute = polygonAbsolute;
+                        currRoom.polygonRelative = polygonRelative;
 
                         rooms.push(currRoom);
                     }
@@ -79,42 +84,28 @@ export default class Algorithm extends React.Component {
         this.setState(newState);
     }
 
-    async checkRule() {
-        if (this.state.positionThing === undefined || this.state.positionThing.details === undefined) {
-            console.log("No position thing found");
-            return;
-        }
-
-        // resolve position thing
-        var coords = await this.resolveThing(this.state.positionThing.details.xURL, this.state.positionThing.details.yURL);
-        if (coords.x === 0 && coords.y === 0) {
-            console.log("Ignoring position since both values are 0");
-            return;
+    async onEvent(event) {
+        if (event.type !== EventTypeMotionDetected) {
+            return
         }
 
         for (var rID = 0; rID < this.state.rooms.length; rID++) {
             var room = this.state.rooms[rID];
 
-            var result = ClassifyPoint(room.polygon, [coords.x, coords.y]);
-            if (result === -1) {
-                this.onUserInRoom(room);
-                return;
+            if (event.relation === CoordinateRelationAbsolute) {
+                var result = ClassifyPoint(room.polygonAbsolute, [event.coords.x, event.coords.y]);
+                if (result === -1) {
+                    this.onUserInRoom(room);
+                    return;
+                }
+            } else {
+                var result = ClassifyPoint(room.polygonRelative, [event.coords.x, event.coords.y]);
+                if (result === -1) {
+                    this.onUserInRoom(room);
+                    return;
+                }
             }
         }
-    }
-
-    async resolveThing(xURL, yURL) {
-        var respX = await fetch(xURL);
-        var respY = await fetch(yURL);
-
-        if (respX.status === 200 && respY.status === 200) {
-            var jsonRespX = await respX.json();
-            var jsonRespY = await respY.json();
-
-            return {x: jsonRespX.value, y: jsonRespY.value};
-        }
-
-        return { x: 0, y: 0 };
     }
 
     async onUserInRoom(room) {
@@ -178,9 +169,7 @@ export default class Algorithm extends React.Component {
             body: JSON.stringify({"on": state})
         });
 
-        var newState = this.state;
-
-        if (resp.status !== 200) {
+        if (resp.status < 200 || resp.status > 204) {
             console.error("Failed to set light state of "+url);   
         }
     }

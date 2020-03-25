@@ -37,7 +37,19 @@ export default class Options extends React.Component {
         newState.detectionMode = event.target.value;
         this.setState(newState);
         
-        this.props.canvasRef.current.switchDetectionMode(event.target.value);
+        if (event.target.value === "none") {
+            this.props.canvasRef.current.setAllowPlaceUser(false);
+            this.props.detectionUserTrackerRef.current.setActive(false);
+            this.props.detectionMotionTrackerRef.current.setActive(false);
+        } else if (event.target.value === "userpos") {
+            this.props.canvasRef.current.setAllowPlaceUser(true);
+            this.props.detectionUserTrackerRef.current.setActive(true);
+            this.props.detectionMotionTrackerRef.current.setActive(false);
+        } else if (event.target.value === "sensors") {
+            this.props.canvasRef.current.setAllowPlaceUser(false);
+            this.props.detectionUserTrackerRef.current.setActive(false);
+            this.props.detectionMotionTrackerRef.current.setActive(true);
+        }
     }
 
     toggleModelEditor() {

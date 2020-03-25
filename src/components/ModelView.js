@@ -3,11 +3,13 @@ import './../App.css';
 import Canvas from './visualization/Canvas.js';
 import Options from './control/Options.js';
 import ModelLog from './control/ModelLog.js';
-import Algorithm from './algorithm/Algorithm.js';
+import ControlLights from './rules/ControlLights.js';
+import EventBus from './detection/EventBus.js';
+import UserTracker from './detection/UserTracker.js';
+import MotionTracker from './detection/MotionTracker';
 import ExpandableObject from './control/ExpandableObject.js';
 import { parseModel } from '../utils/LocationParser.js';
-import { findPositionTracker } from '../utils/WoTConverter.js';
-import { asInternalURL } from '../utils/Common.js';
+
 
 
 export default class ModelView extends React.Component {
@@ -431,188 +433,10 @@ export default class ModelView extends React.Component {
             }
         };
 
-        let inputModel1 = {
-            "@context": [
-                "https://w3id.org/bot#",
-                {
-                    "schema": "http://schema.org/"
-                },
-                {
-                    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                },
-                {
-                    "wot": "https://www.w3.org/2019/wot/td#"
-                },
-                {
-                    "prod": "https://w3id.org/product#"
-                },
-                {
-                    "geo": "https://purl.org/geojson/vocab#"
-                }
-            ],
-            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/SenseDemoSite",
-            "@type": ["Site"],
-            "schema:name": "MySite",
-            "geo:geometry": {
-                "@type": "geo:Polygon",
-                "geo:coordinates": [
-                    [0, 10],
-                    [600, 10],
-                    [600, 300],
-                    [0, 300]
-                ]
-            },
-            "hasBuilding": [
-                {
-                    "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/Building",
-                    "@type": ["Building"],
-                    "schema:name": "Virtual Building",
-                    "geo:geometry": {
-                        "@type": "geo:Polygon",
-                        "geo:coordinates": [
-                            [10, 10],
-                            [300, 10],
-                            [300, 100],
-                            [450, 100],
-                            [450, 200],
-                            [10, 200]
-                        ]
-                    },
-                    "hasStorey": [
-                        {
-                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/StoreyA",
-                            "@type": ["Storey"],
-                            "schema:name": "Ground Floor",
-                            "schema:floorLevel": "0",
-                            "geo:geometry": {
-                                "@type": "geo:Polygon",
-                                "geo:coordinates": [
-                                    [0, 0],
-                                    [300, 0],
-                                    [300, 190],
-                                    [0, 190],
-                                ]
-                            }
-                        },
-                        {
-                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/StoreyB",
-                            "@type": ["Storey"],
-                            "schema:name": "First Floor",
-                            "schema:floorLevel": "1",
-                            "geo:geometry": {
-                                "@type": "geo:Polygon",
-                                "geo:coordinates": [
-                                    [0, 0],
-                                    [300, 0],
-                                    [300, 190],
-                                    [0, 190],
-                                ]
-                            },
-                            "hasSpace": [
-                                {
-                                    "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/SpaceA",
-                                    "@type": ["Space"],
-                                    "schema:name": "Sense Lab",
-                                    "geo:geometry": {
-                                        "@type": "geo:Polygon",
-                                        "geo:coordinates": [
-                                            [10, 10],
-                                            [100, 10],
-                                            [100, 130],
-                                            [10, 130]
-                                        ]
-                                    },
-                                    "hasElement": [
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [2.0, 2.0]
-                                            },
-                                        },
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/41be9037-d802-4509-895b-ddac5452db53",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [0.0, 50.0]
-                                            }
-                                        },
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [2.0, 100.0]
-                                            }
-                                        }
-                                    ]
-                                },
-                                {
-                                    "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/SpaceC",
-                                    "@type": ["bot:Space"],
-                                    "schema:name": "FH Do Lab",
-                                    "geo:geometry": {
-                                        "@type": "geo:Polygon",
-                                        "geo:coordinates": [
-                                            [110, 10],
-                                            [280, 10],
-                                            [280, 90],
-                                            [110, 90],
-                                        ],
-                                    "hasElement": [
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [2.0, 2.0]
-                                            },
-                                        },
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/41be9037-d802-4509-895b-ddac5452db53",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [0.0, 50.0]
-                                            }
-                                        },
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [2.0, 100.0]
-                                            }
-                                        }
-                                    ]
-                                    }
-                                }, {
-                                    "@id": "https://iktsystems.goip.de:443/ict-gw/v1/location/SpaceB",
-                                    "@type": ["bot:Space"],
-                                    "schema:name": "Corridor",
-                                    "geo:geometry": {
-                                        "@type": "geo:Polygon",
-                                        "geo:coordinates": [
-                                            [10, 140],
-                                            [110, 140],
-                                            [110, 100],
-                                            [430, 100],
-                                            [430, 180],
-                                            [10, 180]
-                                        ]
-                                    }
-                                }
-
-                            ]
-                        }
-                    ]
-                }
-            ]
-        };
-
-        this.canvasArea = React.createRef();
+        this.canvasAreaRef = React.createRef();
+        this.eventBusRef = React.createRef();
+        this.detectionUserTrackerRef = React.createRef();
+        this.detectionMotionTrackerRef = React.createRef();
 
         this.state = { inputModel: inputModel, outputModel: null, logEntries: [] };
 
@@ -621,7 +445,6 @@ export default class ModelView extends React.Component {
         this.onParseInfo = this.onParseInfo.bind(this);
         this.onParseSuccess = this.onParseSuccess.bind(this);
         this.onFetchedModelChanged = this.onFetchedModelChanged.bind(this);
-        this.onFakeUserPositionSet = this.onFakeUserPositionSet.bind(this);
 
         // get link to model and parse it
         var decodedString = decodeURIComponent(this.props.match.params.model)
@@ -677,41 +500,6 @@ export default class ModelView extends React.Component {
         }
     }
 
-    async onFakeUserPositionSet(pos) {
-        var tracker = findPositionTracker(this.state.outputModel);
-        
-        if (tracker === undefined) {
-            console.error("Model has no position tracker. Unable to set position");
-            return;
-        }
-
-        var xconfig = {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "value": pos.x.toString() })
-        }
-
-        var yconfig = {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "value": pos.y.toString() })
-        }
-
-        var xURL = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/x";
-        var yURL = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/y";
-        
-        var respX = await fetch(asInternalURL(xURL, "backend"), xconfig);
-        var respY = await fetch(asInternalURL(yURL, "backend"), yconfig);
-        
-        if (respX.status !== 204 && respY.status !== 204) {
-            console.error("Bad response");
-        }
-    }
-
     addLogEntry(severity, message, obj) {
         var newDate = new Date();
         var dateString = newDate.toUTCString();
@@ -741,10 +529,13 @@ export default class ModelView extends React.Component {
         } else {
             return (
                 <div className="App">
-                    <Options defaultZoom={80} canvasRef={this.canvasArea} model={this.state.inputModel} modelChangeHandler={this.onFetchedModelChanged} />
-                    <Canvas ref={this.canvasArea} scale="80" model={this.state.outputModel} offset={offset} fakePositionSetHandler={this.onFakeUserPositionSet}/>
+                    <Canvas ref={this.canvasAreaRef} scale="80" model={this.state.outputModel} offset={offset}/>
                     <ModelLog entries={this.state.logEntries} />
-                    <Algorithm model={this.state.outputModel} offset={offset} />
+                    <EventBus ref={this.eventBusRef} />
+                    <UserTracker ref={this.detectionUserTrackerRef} model={this.state.outputModel} offset={offset} eventBusRef={this.eventBusRef}/>
+                    <MotionTracker ref={this.detectionMotionTrackerRef} model={this.state.outputModel} offset={offset} eventBusRef={this.eventBusRef} />
+                    <ControlLights eventBusRef={this.eventBusRef} model={this.state.outputModel} offset={offset} />
+                    <Options defaultZoom={80} detectionMotionTrackerRef={this.detectionMotionTrackerRef} detectionUserTrackerRef={this.detectionUserTrackerRef} canvasRef={this.canvasAreaRef} model={this.state.inputModel} modelChangeHandler={this.onFetchedModelChanged} />
                 </div>
             );
         }

@@ -48,12 +48,12 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
         var currAction = actions[currActionIndex];
 
         if (expectType(currAction, "iot:TurnOn")) {
-            var form = getNodeOrDefault(currAction, "wot:hasForm", {}, warningCallback);
+            var actionForm = getNodeOrDefault(currAction, "wot:hasForm", {}, warningCallback);
             var input = getNodeOrDefault(currAction, "wot:hasInputSchema", {}, warningCallback);
             var props = getArrayNodeOrDefault(input, "wotschema:properties", [], warningCallback);
-            var target = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
+            var target = getNodeOrDefault(actionForm, "wotmedia:hasTarget", "{}", warningCallback);
 
-            if (props.length != 1) {
+            if (props.length !== 1) {
                 console.log("Sorting out action " + currAction["@index"] +" since it doesn't look like a simple turn on/off action");
                 continue;
             }

@@ -4,6 +4,8 @@ import User from './User.js'
 import Pointer from './Pointer.js'
 import { getRightBottomCorner } from '../../utils/Positioning.js'
 import '../../App.css';
+import { findPositionTracker } from '../../utils/WoTConverter.js';
+import { asInternalURL } from '../../utils/Common.js';
 
 export default class Canvas extends React.Component {
     constructor(props) {
@@ -21,15 +23,9 @@ export default class Canvas extends React.Component {
         this.setState(newState);
     }
 
-    switchDetectionMode(newMode) {
+    setAllowPlaceUser(newMode) {
         var newState = this.state;
-
-        if (newMode == "userpos") {
-            newState.allowPlaceUser = true;
-        } else {
-            newState.allowPlaceUser = false;
-        }
-        
+        newState.allowPlaceUser = newMode;
         this.setState(newState);
     }
 
@@ -61,9 +57,45 @@ export default class Canvas extends React.Component {
 
         newState.userPosition = { x: x / 100 * this.state.scale, y: y / 100 * this.state.scale};
 
-        this.props.fakePositionSetHandler(newState.userPosition);
-
         this.setState(newState);
+
+        this.onFakeUserPositionSet(newState.userPosition);
+    }
+
+
+    async onFakeUserPositionSet(pos) {
+        var tracker = findPositionTracker(this.props.model);
+
+        if (tracker === undefined) {
+            console.error("Model has no position tracker. Unable to set position");
+            return;
+        }
+
+        var xconfig = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "value": pos.x.toString() })
+        }
+
+        var yconfig = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "value": pos.y.toString() })
+        }
+
+        var xURL = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/x";
+        var yURL = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/y";
+
+        var respX = await fetch(asInternalURL(xURL, "backend"), xconfig);
+        var respY = await fetch(asInternalURL(yURL, "backend"), yconfig);
+
+        if (respX.status !== 204 && respY.status !== 204) {
+            console.error("Bad response");
+        }
     }
 
     render() {
