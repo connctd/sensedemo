@@ -82,20 +82,6 @@ func forwardRequest(url string, w http.ResponseWriter, r *http.Request, forwardH
 		}
 	}
 
-	if r.Method == http.MethodPost {
-		fmt.Println("POST")
-		fmt.Println(resp)
-	}
-
-	if r.Method == http.MethodOptions {
-		fmt.Println("OPTIONS")
-		fmt.Println(url)
-		fmt.Println("Req was")
-		fmt.Println(proxyReq)
-		fmt.Println("Resp was")
-		fmt.Println(resp)
-	}
-
 	// WORKAROUND! Das setzen des Headers sollte nicht nötig sein
 	w.Header().Add("Access-Control-Allow-Headers", "content-type")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
