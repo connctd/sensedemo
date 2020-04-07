@@ -25,7 +25,7 @@ export default class MotionSensor extends React.Component {
         this.state.cbConnected(true);
         var jsonResp = await resp.json();
 
-        if (jsonResp.value) {
+        if (jsonResp[this.state.data.details.stateProperty]) {
           newState.fillColor = "#11CC66";
         } else {
           newState.fillColor = "#000000";
@@ -43,7 +43,7 @@ export default class MotionSensor extends React.Component {
       <svg xmlns="http://www.w3.org/2000/svg"
         width={this.props.width} height={this.props.height}
         x={this.props.x} y={this.props.y} stroke={this.state.fillColor}
-            viewBox="0 0 50 50">
+        viewBox="0 0 50 50" pointerEvents="bounding-box">
         <title>{this.props.data.details.name} {this.props.data.id}</title>
           <path id="Pfad #2" strokeWidth="3"
         fill="none"

@@ -42,8 +42,7 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
             for (var currFieldIndex = 0; currFieldIndex < propertyFields.length; currFieldIndex++) {
                 var currPropertyField = propertyFields[currFieldIndex];
                 
-                // WORKAROUND i think only one of them is valid?!
-                if (expectType(currPropertyField, "iot:StatusData") || expectType(currPropertyField, "iot:StateData")) {
+                if (expectType(currPropertyField, "iot:StatusData")) {
                     stateProperty = getNodeOrDefault(currPropertyField, "@index", "", warningCallback);
                     break;
                 }
@@ -75,8 +74,8 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
             for (var currActionPropertyFieldIndex = 0; currActionPropertyFieldIndex < actionPropertyFields.length; currActionPropertyFieldIndex++) {
                 var currActionPropertyField = actionPropertyFields[currActionPropertyFieldIndex];
 
-                // WORKAROUND connctd has to fix wotschema:ObjectSchema
-                if (expectType(currActionPropertyField, "iot:StateData") || expectType(currActionPropertyField, "iot:StatusData")) {
+                
+                if (expectType(currActionPropertyField, "iot:StatusData")) {
                     switchProperty = getNodeOrDefault(currActionPropertyField, "@index", "", warningCallback);
                     break;
                 }
@@ -128,8 +127,7 @@ const extractMotionSensor = (model, errorCallback, warningCallback, infoCallback
             for (var currFieldIndex = 0; currFieldIndex < propertyFields.length; currFieldIndex++) {
                 var currPropertyField = propertyFields[currFieldIndex];
 
-                // WORKAROUND i think only one of them is valid?!
-                if (expectType(currPropertyField, "iot:StatusData") || expectType(currPropertyField, "iot:StateData")) {
+                if (expectType(currPropertyField, "iot:MotionTypeData")) {
                     stateProperty = getNodeOrDefault(currPropertyField, "@index", "", warningCallback);
                     break;
                 }
@@ -146,7 +144,7 @@ const extractMotionSensor = (model, errorCallback, warningCallback, infoCallback
         }
     }
 
-    return { "id": id, "name": name, "type": "motionsensor", "stateURL": asInternalURL(stateURL, "backend")};
+    return { "id": id, "name": name, "type": "motionsensor", "stateProperty":stateProperty, "stateURL": asInternalURL(stateURL, "backend")};
 }
 
 const isPositionTrackerSensor = (model) => {

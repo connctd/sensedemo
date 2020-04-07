@@ -65,8 +65,8 @@ export default class Thing extends React.Component {
         }
 
         return (
-            <svg>
-                <svg onMouseOver={this.hover} onMouseOut={this.hoverOut} >
+            <svg onMouseOver={this.hover} onMouseOut={this.hoverOut}>
+                <svg>
                     {node}
                 </svg>
 

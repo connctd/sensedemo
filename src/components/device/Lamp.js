@@ -43,7 +43,7 @@ export default class Lamp extends React.Component {
       <svg xmlns="http://www.w3.org/2000/svg"
         width={this.props.width} height={this.props.height}
         x={this.props.x} y={this.props.y} fill={this.state.fillColor}
-            viewBox="0 0 390 390">
+        viewBox="0 0 390 390" pointerEvents="bounding-box">
           <title>{this.props.data.details.name} {this.props.data.id}</title>
           <path id="Auswahl" d="M 190.00,0.42
                   C 190.00,0.42 177.00,1.17 177.00,1.17
