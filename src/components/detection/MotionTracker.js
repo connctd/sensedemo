@@ -1,6 +1,5 @@
 import React from 'react';
 import '../../App.css';
-import { getOrigin } from '../../utils/Positioning.js'
 import { BuildMotionDetectedEvent, CoordinateRelationRelative } from '../../utils/Events.js'
 
 /*
@@ -39,15 +38,12 @@ export default class MotionTracker extends React.Component {
 
         for (var sID = 0; sID < this.props.model.length; sID++) {
             var currSite = this.props.model[sID];
-            var buildingOffset = getOrigin(currSite.area, this.props.offset);
 
             for (var bID = 0; bID < currSite.buildings.length; bID++) {
                 var currBuilding = currSite.buildings[bID];
-                var storeyOffset = getOrigin(currBuilding.area, buildingOffset);
 
                 for (var eID = 0; eID < currBuilding.storeys.length; eID++) {
                     var currStorey = currBuilding.storeys[eID];
-                    var roomOffset = getOrigin(currStorey.area, storeyOffset);
 
                     for (var rID = 0; rID < currStorey.rooms.length; rID++) {
                         var currRoom = currStorey.rooms[rID];
@@ -75,10 +71,10 @@ export default class MotionTracker extends React.Component {
         }
 
         var motionSensors = this.state.motionSensors;
-
+        var currMotionSensor;
         // update all motion sensors
         for (var i = 0; i < motionSensors.length; i++) {
-            var currMotionSensor = motionSensors[i];
+            currMotionSensor = motionSensors[i];
 
             if (currMotionSensor.thing.details === undefined) {
                 console.log("Motion sensor has no details");
@@ -102,7 +98,7 @@ export default class MotionTracker extends React.Component {
         var lastMotionDetected = 0;
         
         for (var j = 0; j < motionSensors.length; j++) {
-            var currMotionSensor = motionSensors[j];
+            currMotionSensor = motionSensors[j];
 
             // skip if its latest state is false
             if (!currMotionSensor.state) {

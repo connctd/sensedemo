@@ -1,6 +1,5 @@
 import React from 'react';
 import '../../App.css';
-import { getOrigin } from '../../utils/Positioning.js'
 import { BuildMotionDetectedEvent, CoordinateRelationAbsolute } from '../../utils/Events.js'
 
 /*
@@ -39,15 +38,12 @@ export default class UserTracker extends React.Component {
 
         for (var sID = 0; sID < this.props.model.length; sID++) {
             var currSite = this.props.model[sID];
-            var buildingOffset = getOrigin(currSite.area, this.props.offset);
 
             for (var bID = 0; bID < currSite.buildings.length; bID++) {
                 var currBuilding = currSite.buildings[bID];
-                var storeyOffset = getOrigin(currBuilding.area, buildingOffset);
 
                 for (var eID = 0; eID < currBuilding.storeys.length; eID++) {
                     var currStorey = currBuilding.storeys[eID];
-                    var roomOffset = getOrigin(currStorey.area, storeyOffset);
 
                     for (var rID = 0; rID < currStorey.rooms.length; rID++) {
                         var currRoom = currStorey.rooms[rID];

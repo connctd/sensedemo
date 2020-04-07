@@ -17,7 +17,7 @@ export default class ModelView extends React.Component {
         super(props);
         let inputModel = {
             "@context": [
-                "http://schema.org/",
+                "https://schema.org/",
                 {
                     "bot": "https://w3id.org/bot#"
                 },
@@ -34,16 +34,16 @@ export default class ModelView extends React.Component {
                     "geo": "https://purl.org/geojson/vocab#"
                 }
             ],
-            "@id": "https://iktsystems.goip.de:443/ict-gw/v1senseDemoSite",
+            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite",
             "@type": [
-                "https://w3id.org/bot#Site"
+                "bot:Site"
             ],
             "name": "Sense demo site v0.1",
             "bot:hasBuilding": [
                 {
                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding",
                     "@type": [
-                        "https://w3id.org/bot#Building"
+                        "bot:Building"
                     ],
                     "name": "Residential building",
                     "bot:hasStorey": [
@@ -51,53 +51,29 @@ export default class ModelView extends React.Component {
                             "floorLevel": "1",
                             "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor",
                             "@type": [
-                                "https://w3id.org/bot#Storey"
+                                "bot:Storey"
                             ],
                             "name": "First floor",
                             "bot:hasSpace": [
                                 {
                                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor/spaces/bedroom",
                                     "@type": [
-                                        "https://w3id.org/bot#Space"
+                                        "bot:Space"
                                     ],
-                                    "name": "Bedroom",
+                                    "name": "Bedroom (ICT Lab Dortmund)",
                                     "bot:hasElement": [
                                         {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [2.0, 2.0]
-                                            },
-                                        },
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/41be9037-d802-4509-895b-ddac5452db53",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [0.0, 50.0]
-                                            }
-                                        },
-                                        {
-                                            "@type": "wot:Thing",
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
-                                            "geo:geometry": {
-                                                "@type": "geo:Point",
-                                                "geo:coordinates": [2.0, 100.0]
-                                            }
-                                        },
-                                        {
                                             "@type": [
-                                                "https://w3id.org/bot#Element",
-                                                "https://www.w3.org/2019/wot/td#Thing"
+                                                "bot:Element",
+                                                "wot:Thing"
                                             ],
-                                            "@id": "https://localhost:8092/thing/11a5423995d544c6",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/11a5423995d544c6",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     0.0,
                                                     55.0
                                                 ],
-                                                "@id": "point:b3ff2ec7-43d7-48a3-821c-8ee5e51c4951",
+                                                "@id": "point:e6302ffa-74bc-4d4f-bef8-055966ac7d79",
                                                 "@type": [
                                                     "https://purl.org/geojson/vocab#Point"
                                                 ]
@@ -105,16 +81,33 @@ export default class ModelView extends React.Component {
                                         },
                                         {
                                             "@type": [
-                                                "https://w3id.org/bot#Element",
-                                                "https://www.w3.org/2019/wot/td#Thing"
+                                                "bot:Element",
+                                                "wot:Thing"
                                             ],
-                                            "@id": "https://localhost:8092/thing/59b65e47738a439d",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/59b65e47738a439d",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     90.0,
-                                                    55.0
+                                                    45.0
                                                 ],
-                                                "@id": "point:511659c8-31ab-437e-89aa-b03a54dec0c8",
+                                                "@id": "point:d622b7e3-b65e-4d3b-b0a3-9b98928ce966",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/763f6af05bafd267",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    90.0,
+                                                    75.0
+                                                ],
+                                                "@id": "point:0626240a-e8bb-4425-8155-541b877366f4",
                                                 "@type": [
                                                     "https://purl.org/geojson/vocab#Point"
                                                 ]
@@ -140,7 +133,7 @@ export default class ModelView extends React.Component {
                                                 125.0
                                             ]
                                         ],
-                                        "@id": "polygon:215ac979-b525-4bfd-8a9b-cb1bcb945bc6",
+                                        "@id": "polygon:8c11cd1c-b3b9-419b-beef-b516f65d76a0",
                                         "@type": [
                                             "https://purl.org/geojson/vocab#Polygon"
                                         ]
@@ -149,22 +142,22 @@ export default class ModelView extends React.Component {
                                 {
                                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor/spaces/livingroom",
                                     "@type": [
-                                        "https://w3id.org/bot#Space"
+                                        "bot:Space"
                                     ],
-                                    "name": "Livingroom",
+                                    "name": "Livingroom (Sense Lab Berlin)",
                                     "bot:hasElement": [
                                         {
                                             "@type": [
-                                                "https://w3id.org/bot#Element",
-                                                "https://www.w3.org/2019/wot/td#Thing"
+                                                "bot:Element",
+                                                "wot:Thing"
                                             ],
-                                            "@id": "https://localhost:8092/thing/906f4202b77b42fe",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/906f4202b77b42fe",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
-                                                    170.0,
-                                                    0.0
+                                                    160.0,
+                                                    5.0
                                                 ],
-                                                "@id": "point:d9bc7338-2cbe-4ebb-9f97-e9789b6eba4f",
+                                                "@id": "point:872475c7-540b-4be4-9925-edb175cb2a34",
                                                 "@type": [
                                                     "https://purl.org/geojson/vocab#Point"
                                                 ]
@@ -172,16 +165,16 @@ export default class ModelView extends React.Component {
                                         },
                                         {
                                             "@type": [
-                                                "https://w3id.org/bot#Element",
-                                                "https://www.w3.org/2019/wot/td#Thing"
+                                                "bot:Element",
+                                                "wot:Thing"
                                             ],
-                                            "@id": "https://localhost:8092/thing/81f1d73750e7495e",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/81f1d73750e7495e",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     80.0,
                                                     55.0
                                                 ],
-                                                "@id": "point:589a6d4c-48bb-4224-bca1-bd8a447de299",
+                                                "@id": "point:c4b6c630-036b-42c6-a0a0-eba7a4b6beb3",
                                                 "@type": [
                                                     "https://purl.org/geojson/vocab#Point"
                                                 ]
@@ -189,16 +182,33 @@ export default class ModelView extends React.Component {
                                         },
                                         {
                                             "@type": [
-                                                "https://w3id.org/bot#Element",
-                                                "https://www.w3.org/2019/wot/td#Thing"
+                                                "bot:Element",
+                                                "wot:Thing"
                                             ],
-                                            "@id": "https://localhost:8092/thing/2bf5bf8c8f724adc",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/2bf5bf8c8f724adc",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     170.0,
                                                     80.0
                                                 ],
-                                                "@id": "point:cf8f706b-0e8f-43e2-b5df-fefaca7e5b22",
+                                                "@id": "point:0a2239d0-9ac5-4236-a6bc-162a261213ce",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/41be9037-d802-4509-895b-ddac5452db53",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    90.0,
+                                                    65.0
+                                                ],
+                                                "@id": "point:10ef7519-e30a-4cd3-bd9a-96c4db1ea884",
                                                 "@type": [
                                                     "https://purl.org/geojson/vocab#Point"
                                                 ]
@@ -224,7 +234,7 @@ export default class ModelView extends React.Component {
                                                 125.0
                                             ]
                                         ],
-                                        "@id": "polygon:14235f56-41f2-437f-adfb-616d4074439e",
+                                        "@id": "polygon:7528953e-af92-4a3e-bf57-9f36d306a68b",
                                         "@type": [
                                             "https://purl.org/geojson/vocab#Polygon"
                                         ]
@@ -233,9 +243,62 @@ export default class ModelView extends React.Component {
                                 {
                                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor/spaces/kitchen",
                                     "@type": [
-                                        "https://w3id.org/bot#Space"
+                                        "bot:Space"
                                     ],
                                     "name": "Kitchen",
+                                    "bot:hasElement": [
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/ed2f1fb3-cbf8-479e-99bb-ef9968e5eed6",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    60.0,
+                                                    35.0
+                                                ],
+                                                "@id": "point:144be703-98d9-4650-9e1d-b181a672eb8f",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/1baf5841-15c9-4a65-be77-67b3d8445a61",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    3.0,
+                                                    3.0
+                                                ],
+                                                "@id": "point:5487618b-9aa4-4786-b0f2-a072a8cc595e",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    0.0,
+                                                    70.0
+                                                ],
+                                                "@id": "point:0ca9f617-578f-491f-a4cb-d63b19a71e0e",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        }
+                                    ],
                                     "geo:geometry": {
                                         "geo:coordinates": [
                                             [
@@ -255,7 +318,7 @@ export default class ModelView extends React.Component {
                                                 220.0
                                             ]
                                         ],
-                                        "@id": "polygon:02f520c2-a8d7-41dd-8fef-e3bfb24b37ac",
+                                        "@id": "polygon:ed58eca8-173f-4bb3-9094-bc659b90f018",
                                         "@type": [
                                             "https://purl.org/geojson/vocab#Polygon"
                                         ]
@@ -264,7 +327,7 @@ export default class ModelView extends React.Component {
                                 {
                                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor/spaces/bathroom",
                                     "@type": [
-                                        "https://w3id.org/bot#Space"
+                                        "bot:Space"
                                     ],
                                     "name": "Bathroom",
                                     "geo:geometry": {
@@ -286,7 +349,7 @@ export default class ModelView extends React.Component {
                                                 175.0
                                             ]
                                         ],
-                                        "@id": "polygon:194a7e14-b0e4-4fb7-9c25-0ba7ca44d034",
+                                        "@id": "polygon:6596a149-8579-43c7-a4a7-898c5ed132f1",
                                         "@type": [
                                             "https://purl.org/geojson/vocab#Polygon"
                                         ]
@@ -295,9 +358,62 @@ export default class ModelView extends React.Component {
                                 {
                                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor/spaces/corridor",
                                     "@type": [
-                                        "https://w3id.org/bot#Space"
+                                        "bot:Space"
                                     ],
                                     "name": "Corridor",
+                                    "bot:hasElement": [
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    40.0,
+                                                    35.0
+                                                ],
+                                                "@id": "point:49cd5503-a683-450d-b6bc-6af6376c432f",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/f97f2adb-8429-4e28-9774-c952b2dff96d",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    70.0,
+                                                    3.0
+                                                ],
+                                                "@id": "point:80336697-2b86-43b3-b9ee-517dd4a0fc69",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "@type": [
+                                                "bot:Element",
+                                                "wot:Thing"
+                                            ],
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/d60014ef-01ee-486e-9de2-fddfafe590bc",
+                                            "geo:geometry": {
+                                                "geo:coordinates": [
+                                                    0.0,
+                                                    70.0
+                                                ],
+                                                "@id": "point:6da5cd34-f281-4807-8fde-d5398dc99d67",
+                                                "@type": [
+                                                    "https://purl.org/geojson/vocab#Point"
+                                                ]
+                                            }
+                                        }
+                                    ],
                                     "geo:geometry": {
                                         "geo:coordinates": [
                                             [
@@ -317,7 +433,7 @@ export default class ModelView extends React.Component {
                                                 220.0
                                             ]
                                         ],
-                                        "@id": "polygon:803d265f-1348-45f7-965f-92de79bf8c81",
+                                        "@id": "polygon:6f8d5c3d-6d42-4516-9df5-b89a43f80bed",
                                         "@type": [
                                             "https://purl.org/geojson/vocab#Polygon"
                                         ]
@@ -326,7 +442,7 @@ export default class ModelView extends React.Component {
                                 {
                                     "@id": "https://iktsystems.goip.de:443/ict-gw/v1/sites/senseDemoSite/buildings/residentialBuilding/storeys/firstFloor/spaces/stairwell",
                                     "@type": [
-                                        "https://w3id.org/bot#Space"
+                                        "bot:Space"
                                     ],
                                     "name": "Stairwell",
                                     "geo:geometry": {
@@ -348,7 +464,7 @@ export default class ModelView extends React.Component {
                                                 220.0
                                             ]
                                         ],
-                                        "@id": "polygon:261232d0-1225-4866-b7a6-8a70326aede0",
+                                        "@id": "polygon:539668a8-631f-4bbc-935d-5f3a3b1092ce",
                                         "@type": [
                                             "https://purl.org/geojson/vocab#Polygon"
                                         ]
@@ -374,7 +490,7 @@ export default class ModelView extends React.Component {
                                         250.0
                                     ]
                                 ],
-                                "@id": "polygon:2112ca84-ce86-4dd9-9d92-5444352021b1",
+                                "@id": "polygon:ddab9436-d1cf-42b3-839d-8d649c15d1cc",
                                 "@type": [
                                     "https://purl.org/geojson/vocab#Polygon"
                                 ]
@@ -400,7 +516,7 @@ export default class ModelView extends React.Component {
                                 250.0
                             ]
                         ],
-                        "@id": "polygon:3bf28da4-a96f-4d16-a55d-a9db5a16366a",
+                        "@id": "polygon:61a5ccbf-66d3-437d-90ec-5e9429ca727f",
                         "@type": [
                             "https://purl.org/geojson/vocab#Polygon"
                         ]
@@ -426,7 +542,7 @@ export default class ModelView extends React.Component {
                         300.0
                     ]
                 ],
-                "@id": "polygon:7298eede-140f-4b61-9188-8d58fe343aab",
+                "@id": "polygon:fb2efec0-ad81-44ad-84f2-5cd0d6b2abe1",
                 "@type": [
                     "https://purl.org/geojson/vocab#Polygon"
                 ]

@@ -1,8 +1,5 @@
 import React from 'react';
-import ClassifyPoint from 'robust-point-in-polygon';
 import '../../App.css';
-import { getOrigin } from '../../utils/Positioning.js'
-import { BuildUserInPlaceEvent } from '../../utils/Events.js'
 
 /*
     This rules switches light if a user is an specific room

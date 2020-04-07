@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../App.css';
 import { getOrigin } from '../../utils/Positioning.js'
-import { EventTypeMotionDetected, CoordinateRelationAbsolute, CoordinateRelationRelative } from '../../utils/Events.js'
+import { EventTypeMotionDetected, CoordinateRelationAbsolute } from '../../utils/Events.js'
 import ClassifyPoint from 'robust-point-in-polygon';
 
 /*
@@ -93,14 +93,14 @@ export default class ControlLights extends React.Component {
             var room = this.state.rooms[rID];
 
             if (event.relation === CoordinateRelationAbsolute) {
-                var result = ClassifyPoint(room.polygonAbsolute, [event.coords.x, event.coords.y]);
-                if (result === -1) {
+                var relResult = ClassifyPoint(room.polygonAbsolute, [event.coords.x, event.coords.y]);
+                if (relResult === -1) {
                     this.onUserInRoom(room);
                     return;
                 }
             } else {
-                var result = ClassifyPoint(room.polygonRelative, [event.coords.x, event.coords.y]);
-                if (result === -1) {
+                var absResult = ClassifyPoint(room.polygonRelative, [event.coords.x, event.coords.y]);
+                if (absResult === -1) {
                     this.onUserInRoom(room);
                     return;
                 }
@@ -138,7 +138,7 @@ export default class ControlLights extends React.Component {
                 continue;
             }
 
-            this.setLightState(currThing.switchURL, true);
+            this.setLightState(currThing.switchURL, currThing.switchProperty, true);
         }
     }
 
@@ -156,17 +156,20 @@ export default class ControlLights extends React.Component {
                 continue;
             }
 
-            this.setLightState(currThing.switchURL, false);
+            this.setLightState(currThing.switchURL, currThing.switchProperty, false);
         }
     }
 
-    async setLightState(url, state) {
+    async setLightState(url, propertyName, state) {
+        var body = {};
+        body[propertyName] = state;
+
         var resp = await fetch(url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({"on": state})
+            body: JSON.stringify(body)
         });
 
         if (resp.status < 200 || resp.status > 204) {

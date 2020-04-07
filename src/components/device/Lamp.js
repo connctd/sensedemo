@@ -25,7 +25,7 @@ export default class Lamp extends React.Component {
         this.state.cbConnected(true);
         var jsonResp = await resp.json();
         
-        if (jsonResp.value) {
+        if (jsonResp[this.state.data.details.stateProperty]) {
           newState.fillColor = "#FF6E04";
         } else {
           newState.fillColor = "#000000";
@@ -44,6 +44,7 @@ export default class Lamp extends React.Component {
         width={this.props.width} height={this.props.height}
         x={this.props.x} y={this.props.y} fill={this.state.fillColor}
             viewBox="0 0 390 390">
+          <title>{this.props.data.details.name} {this.props.data.id}</title>
           <path id="Auswahl" d="M 190.00,0.42
                   C 190.00,0.42 177.00,1.17 177.00,1.17
                     162.44,2.56 147.93,5.60 134.00,10.03

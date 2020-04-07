@@ -149,5 +149,11 @@ export var wotContext = [
     },
     {
         "unit": "http://qudt.org/vocab/unit/"
+    },
+    {
+        "saref":"https://w3id.org/saref#"
+    },
+    {
+        "purl":"http://purl.org/dc/terms/"
     }
 ];

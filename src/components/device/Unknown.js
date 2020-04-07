@@ -12,6 +12,7 @@ export default class Unknown extends React.Component {
   render() {
     return (
       <svg>
+        <title>{this.props.data.id}</title>
         <text
           visibility="visible"
           className="ThingText"

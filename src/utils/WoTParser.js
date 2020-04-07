@@ -23,7 +23,7 @@ export const retrieveAndParseWoTModel = async (wotURL, errorCallback, warningCal
     try {
         jsonResp = await resp.json();
     } catch (e) {
-        errorCallback("Failed to parse WOT TD", wotURL);
+        errorCallback("Failed to parse WOT TD", resp);
         return;
     }    
 
@@ -37,7 +37,7 @@ export const parseModel = async (model, errorCallback, warningCallback, infoCall
     if (compactedModel !== undefined) {
         var thing = extractThing(compactedModel, errorCallback, warningCallback, infoCallback);
         if (thing !== undefined) {
-            infoCallback("Thing was extracted", thing);
+            infoCallback("Thing was extracted (" + thing.name + ")", thing);
             return thing;
         }
     }

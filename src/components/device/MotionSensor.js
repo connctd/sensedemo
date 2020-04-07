@@ -44,6 +44,7 @@ export default class MotionSensor extends React.Component {
         width={this.props.width} height={this.props.height}
         x={this.props.x} y={this.props.y} stroke={this.state.fillColor}
             viewBox="0 0 50 50">
+        <title>{this.props.data.details.name} {this.props.data.id}</title>
           <path id="Pfad #2" strokeWidth="3"
         fill="none"
         d="M 8.26,42.48
