@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // HandleIndexCall does nothing
@@ -82,9 +83,11 @@ func forwardRequest(url string, w http.ResponseWriter, r *http.Request, forwardH
 		}
 	}
 
-	// WORKAROUND! Das setzen des Headers sollte nicht nötig sein
-	w.Header().Add("Access-Control-Allow-Headers", "content-type")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// WORKAROUND: cors headers a missing
+	if strings.HasPrefix(url, "https://iktsystems.goip.de") {
+		w.Header().Add("Access-Control-Allow-Headers", "content-type")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
 
 	w.WriteHeader(resp.StatusCode)
 	w.Write(bodyBytes)
