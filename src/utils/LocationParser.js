@@ -37,12 +37,6 @@ const getReducedModel = async (model, successCallback, errorCallback, warningCal
                 documentUrl: asInternalURL("https://w3id.org/bot#", "schema")
             };
         }
-    
-        // WORKAROUND!
-        if (url === "https://www.w3.org/2019/wot/td#") {
-            console.log("WORKAROUND!: " + url);
-            url = "https://www.w3.org/2019/wot/td/v1#";
-        }
         
         return {
             contextUrl: null,
