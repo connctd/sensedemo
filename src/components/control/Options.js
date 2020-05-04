@@ -119,7 +119,7 @@ export default class Options extends React.Component {
                 </div>
 
                 <div className={this.state.feedTwoVisible ? 'FeedViewTwo' : 'FeedViewTwo Hidden'}>
-                    <FeedViewer frameWidth="1024" frameHeight="768" frameSrc="/api/redirect?data=aHR0cDovL2gyNzM2ODExLnN0cmF0b3NlcnZlci5uZXQ6NjEwMzAv" cancelHandler={this.toggleFeedTwo} />
+                    <FeedViewer frameWidth="1024" frameHeight="768" frameSrc="http://h2736811.stratoserver.net:61030/" cancelHandler={this.toggleFeedTwo} />
                 </div>
                 
             </div>
