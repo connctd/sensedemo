@@ -2,7 +2,7 @@ import { retrieveAndParseWoTModel } from './WoTParser.js';
 import { getNodeOrDefault, expectType, getArrayNodeOrDefault } from './Common.js';
 
 // parses a model and extracts all site->building->storey data
-export const extractSiteData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+export const extractSiteData = async (model, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback) => {
     infoCallback("Extracting site from model", model);
 
     // we are expecting a site as root element
@@ -18,15 +18,14 @@ export const extractSiteData = async (model, successCallback, errorCallback, war
     
     var convertedBuildings = [];
     for (var i = 0; i < buildings.length; i++) {
-        var convertedBuilding = await extractBuildingData(buildings[i], successCallback, errorCallback, warningCallback, infoCallback);
+        var convertedBuilding = await extractBuildingData(buildings[i], successCallback, errorCallback, warningCallback, infoCallback, notificationCallback);
         convertedBuildings.push(convertedBuilding);
     }
 
-    
     return [{ id: id, name: name, area: dimensions, buildings: convertedBuildings }];
 }
 
-const extractBuildingData = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+const extractBuildingData = async (model, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback) => {
     infoCallback("Extracting building from model", model);
 
     // we are expecting a site as root element

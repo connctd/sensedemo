@@ -1,17 +1,20 @@
 import React from 'react';
 import '../../App.css';
 import ModelEditor from './ModelEditor.js';
+import FeedViewer from './FeedViewer';
 
 export default class Options extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { currZoom: this.props.defaultZoom, editorVisible: false, detectionMode: "none" };
+        this.state = { currZoom: this.props.defaultZoom, editorVisible: false, detectionMode: "none", feedOneVisible: false, feedTwoVisible: false };
 
         this.zoomIncrease = this.zoomIncrease.bind(this);
         this.zoomDecrease = this.zoomDecrease.bind(this);
         this.switchDetectionMode = this.switchDetectionMode.bind(this);
         this.toggleModelEditor = this.toggleModelEditor.bind(this);
+        this.toggleFeedOne = this.toggleFeedOne.bind(this);
+        this.toggleFeedTwo = this.toggleFeedTwo.bind(this);
     }
 
     zoomIncrease(event) {
@@ -54,7 +57,25 @@ export default class Options extends React.Component {
 
     toggleModelEditor() {
         var newState = this.state;
+        newState.feedOneVisible = false;
+        newState.feedTwoVisible = false;
         newState.editorVisible = !this.state.editorVisible;
+        this.setState(newState);
+    }
+
+    toggleFeedOne() {
+        var newState = this.state;
+        newState.editorVisible = false;
+        newState.feedTwoVisible = false;
+        newState.feedOneVisible = !this.state.feedOneVisible;
+        this.setState(newState);
+    }
+
+    toggleFeedTwo() {
+        var newState = this.state;
+        newState.editorVisible = false;
+        newState.feedOneVisible = false;
+        newState.feedTwoVisible = !this.state.feedTwoVisible;
         this.setState(newState);
     }
 
@@ -75,6 +96,10 @@ export default class Options extends React.Component {
                 <br /><br />
                 <button className="OptionsButton" onClick={this.toggleModelEditor}>Model<br />&lt;&gt;</button>
                 <br /><br />
+                <button className="OptionsButton" onClick={this.toggleFeedOne}>Feed 1<br />Berlin</button>
+                <br /><br />
+                <button className="OptionsButton" onClick={this.toggleFeedTwo}>Feed 2<br />Dortmund</button>
+                <br /><br />
                 <button className="OptionsButton" onClick={this.exit}>Exit<br />&times;</button>
                 <br /><br />
                 Detection
@@ -87,6 +112,14 @@ export default class Options extends React.Component {
 
                 <div className={this.state.editorVisible ? 'EditModelView' : 'EditModelView Hidden'}>
                     <ModelEditor model={this.props.model} modelChangeHandler={this.props.modelChangeHandler} cancelHandler={this.toggleModelEditor}/>
+                </div>
+
+                <div className={this.state.feedOneVisible ? 'FeedViewOne' : 'FeedViewOne Hidden'}>
+                    <FeedViewer mode="img" frameWidth="1024" frameHeight="768" frameSrc="http://34.77.75.224/stream" cancelHandler={this.toggleFeedOne} />
+                </div>
+
+                <div className={this.state.feedTwoVisible ? 'FeedViewTwo' : 'FeedViewTwo Hidden'}>
+                    <FeedViewer frameWidth="1024" frameHeight="768" frameSrc="http://h2736811.stratoserver.net:61030" cancelHandler={this.toggleFeedTwo} />
                 </div>
                 
             </div>

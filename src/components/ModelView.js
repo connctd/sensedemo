@@ -3,13 +3,13 @@ import './../App.css';
 import Canvas from './visualization/Canvas.js';
 import Options from './control/Options.js';
 import ModelLog from './control/ModelLog.js';
+import NotificationLog from './control/NotificationLog.js';
 import ControlLights from './rules/ControlLights.js';
 import EventBus from './detection/EventBus.js';
 import UserTracker from './detection/UserTracker.js';
 import MotionTracker from './detection/MotionTracker';
 import ExpandableObject from './control/ExpandableObject.js';
 import { parseModel } from '../utils/LocationParser.js';
-
 
 
 export default class ModelView extends React.Component {
@@ -151,7 +151,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/906f4202b77b42fe",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     160.0,
@@ -168,7 +168,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/81f1d73750e7495e",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/1baf5841-15c9-4a65-be77-67b3d8445a61",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     80.0,
@@ -185,10 +185,10 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/2bf5bf8c8f724adc",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/f97f2adb-8429-4e28-9774-c952b2dff96d",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
-                                                    170.0,
+                                                    160.0,
                                                     80.0
                                                 ],
                                                 "@id": "point:0a2239d0-9ac5-4236-a6bc-162a261213ce",
@@ -252,7 +252,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/ed2f1fb3-cbf8-479e-99bb-ef9968e5eed6",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/81f1d73750e7495e",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     60.0,
@@ -269,7 +269,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/1baf5841-15c9-4a65-be77-67b3d8445a61",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/906f4202b77b42fe",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     3.0,
@@ -286,7 +286,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/c3931427-a8d9-47f3-8f54-6f3df91ee07e",
+                                            "@id": "https://iktsystems.goip.de:443/ict-gw/v1/things/2bf5bf8c8f724adc",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     0.0,
@@ -367,7 +367,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/ed2f1fb3-cbf8-479e-99bb-ef9968e5eed6",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     40.0,
@@ -384,7 +384,7 @@ export default class ModelView extends React.Component {
                                                 "bot:Element",
                                                 "wot:Thing"
                                             ],
-                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/f97f2adb-8429-4e28-9774-c952b2dff96d",
+                                            "@id": "https://api.connctd.io/api/betav1/wot/tds/20b4583d-2cdf-4b86-9b99-58bcfb8ea988",
                                             "geo:geometry": {
                                                 "geo:coordinates": [
                                                     70.0,
@@ -554,12 +554,13 @@ export default class ModelView extends React.Component {
         this.detectionUserTrackerRef = React.createRef();
         this.detectionMotionTrackerRef = React.createRef();
 
-        this.state = { inputModel: inputModel, outputModel: null, logEntries: [] };
+        this.state = { inputModel: inputModel, outputModel: null, logEntries: [], notificationEntries: [] };
 
         this.onParseError = this.onParseError.bind(this);
         this.onParseWarning = this.onParseWarning.bind(this);
         this.onParseInfo = this.onParseInfo.bind(this);
         this.onParseSuccess = this.onParseSuccess.bind(this);
+        this.onParseNotification = this.onParseNotification.bind(this);
         this.onFetchedModelChanged = this.onFetchedModelChanged.bind(this);
 
         // get link to model and parse it
@@ -581,6 +582,11 @@ export default class ModelView extends React.Component {
     onParseInfo(message, obj) {
         console.info(message, obj);
         this.addLogEntry("info", message, obj);
+    }
+
+    onParseNotification(message, obj) {
+        console.info(message, obj);
+        this.addNotificationEntry("info", message, obj);
     }
 
     onParseSuccess(message, obj) {
@@ -610,7 +616,7 @@ export default class ModelView extends React.Component {
         this.setState(newState);
         
         if (parsedModel !== undefined) {
-            parseModel(parsedModel, this.onParseSuccess, this.onParseError, this.onParseWarning, this.onParseInfo);
+            parseModel(parsedModel, this.onParseSuccess, this.onParseError, this.onParseWarning, this.onParseInfo, this.onParseNotification);
         } else {
             this.onParseError("Model seems to be invalid", { "msg": e + ""});
         }
@@ -630,8 +636,22 @@ export default class ModelView extends React.Component {
         this.setState(newState);
     }
 
+    addNotificationEntry(severity, message, obj) {
+        var newDate = new Date();
+        var dateString = newDate.toUTCString();
+
+        var newState = this.state;
+        newState.notificationEntries.push(<ExpandableObject
+            key={newState.logEntries.length + "-" + dateString}
+            severity={severity}
+            message={message}
+            json={obj != null ? JSON.stringify(obj, null, 4) : null}
+        />);
+        this.setState(newState);
+    }
+
     componentDidMount() {
-        parseModel(this.state.inputModel, this.onParseSuccess, this.onParseError, this.onParseWarning, this.onParseInfo);
+        parseModel(this.state.inputModel, this.onParseSuccess, this.onParseError, this.onParseWarning, this.onParseInfo, this.onParseNotification);
     }
 
     render() {
@@ -645,8 +665,9 @@ export default class ModelView extends React.Component {
         } else {
             return (
                 <div className="App">
-                    <Canvas ref={this.canvasAreaRef} scale="80" model={this.state.outputModel} offset={offset}/>
+                    <Canvas ref={this.canvasAreaRef} scale="80" model={this.state.outputModel} offset={offset} />
                     <ModelLog entries={this.state.logEntries} />
+                    <NotificationLog entries={this.state.notificationEntries} />
                     <EventBus ref={this.eventBusRef} />
                     <UserTracker ref={this.detectionUserTrackerRef} model={this.state.outputModel} offset={offset} eventBusRef={this.eventBusRef}/>
                     <MotionTracker ref={this.detectionMotionTrackerRef} model={this.state.outputModel} offset={offset} eventBusRef={this.eventBusRef} />

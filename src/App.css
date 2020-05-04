@@ -1,5 +1,10 @@
 body {
   background-color: #DDDDDD;
+  overflow-y: scroll;
+}
+
+button:focus {
+  outline:0;
 }
 
 .App {
@@ -40,6 +45,49 @@ body {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.FeedViewOne {
+  position: fixed;
+  width: 60%;
+  height: 90%;
+  top: 5%;
+  left: 20%;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.FeedViewTwo {
+  position: fixed;
+  width: 60%;
+  height: 90%;
+  top: 5%;
+  left: 20%;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.FeedWindow {
+  height: 100%;
+}
+
+.FeedWindowMainElement {
+  height: 90%;
+  padding-bottom: 10px;
+}
+
+.FeedWindowMiddleElement {
+  position: relative;
+  top: 50%;
+  
+}
+
+.FeedWindowNavElement {
+  height: 10%;
 }
 
 .Site {
@@ -126,8 +174,8 @@ body {
 .EditModelView {
   position: fixed;
   width: 60%;
-  height: 60%;
-  top: 20%;
+  height: 70%;
+  top: 15%;
   left: 20%;
   background-color: rgba(255, 255, 255, 0.9);
   padding: 20px;
@@ -159,6 +207,7 @@ body {
   text-decoration: none;
   display: inline-block;
   font-size: 12px;
+  width: 40px;
 }
 
 .HideButton {
@@ -170,10 +219,47 @@ body {
   text-decoration: none;
   display: inline-block;
   font-size: 12px;
+  width: 40px;
 }
 
-.AlgoView {
-  
+.CopyButton {
+  background-color: #AAAAAA;
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  width: 40px;
+}
+
+.CopiedButton {
+  background-color: #DDDDDD;
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  width: 40px;
+}
+
+.EvaluationView {
+  text-align: left;
+  float:left;
+  background-color: white;
+  height: 100%;
+  width: 25%;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.LogView {
   text-align: left;
   float:left;
   background-color: white;
@@ -183,20 +269,20 @@ body {
   padding-top: 2px;
   padding-bottom: 10px;
   border-radius: 10px;
+  margin-left: 10px;
 }
 
-.LogView {
+.NotificationView {
   text-align: left;
   float:left;
   background-color: white;
   height: 100%;
-  width: 60%;
+  width: 30%;
   padding-left: 20px;
   padding-top: 2px;
   padding-bottom: 10px;
   border-radius: 10px;
   margin-left: 10px;
-  margin-right: 10px;
 }
 
 .Log {
@@ -206,7 +292,12 @@ body {
 }
 
 .LogEntry {
-  width: 400px;
+  width: 80%;
+  display: inline-block;
+}
+
+.LogEntryButton {
+  width: 20%;
   display: inline-block;
 }
 
@@ -243,6 +334,8 @@ body {
   border-radius: 15px;
   padding: 10px;
   width: 90%;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .Hidden {

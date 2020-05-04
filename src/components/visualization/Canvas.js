@@ -102,7 +102,9 @@ export default class Canvas extends React.Component {
         let data = this.props.model;
         
         if (data === null) {
-            return "No model data...";
+            return (<div>
+                        <br />No model data...<br /><br />
+                    </div>);
         }
 
         var highestCoords = { x: 0, y: 0 };

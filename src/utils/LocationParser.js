@@ -4,22 +4,27 @@ import { loadDocument, asInternalURL } from './Common.js';
 import { locationsContext } from './Common.js';
 
 // loads remote model and transforms it to a representation this visualizer can work with
-export const parseModel = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+export const parseModel = async (model, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback) => {
     infoCallback("Parsing model", model);
+    notificationCallback("Step 1/4: Read raw input model", model)
 
-    var compactedModel = await getReducedModel(model, successCallback, errorCallback, warningCallback, infoCallback);
+    var compactedModel = await getReducedModel(model, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback);
+
+    notificationCallback("Step 2/4: Preprocess model (expand & compact)", model)
 
     if (compactedModel !== undefined) {
-        var extractedModel = await extractSiteData(compactedModel, successCallback, errorCallback, warningCallback, infoCallback);
+        notificationCallback("Step 3/4: Traverse model, resolve tds and translate", compactedModel)
+        var extractedModel = await extractSiteData(compactedModel, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback);
         
         if (extractedModel !== undefined) {
             successCallback("Finished", extractedModel);
+            notificationCallback("Step 4/4: Pass translated model to renderer", extractedModel)
         }
     }
 };
 
 // expands and compacts given model
-const getReducedModel = async (model, successCallback, errorCallback, warningCallback, infoCallback) => {
+const getReducedModel = async (model, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback) => {
     if (model === undefined || model["@context"] === undefined) {
         errorCallback("Model has no context", model);
         return;
@@ -37,7 +42,7 @@ const getReducedModel = async (model, successCallback, errorCallback, warningCal
                 documentUrl: asInternalURL("https://w3id.org/bot#", "schema")
             };
         }
-        
+
         return {
             contextUrl: null,
             document: await loadDocument(url, {

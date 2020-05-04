@@ -187,7 +187,7 @@ export default class ControlLights extends React.Component {
 
     render() {
         return (
-            <div className="AlgoView">
+            <div className="EvaluationView">
                 <h1>Evaluation</h1>
                 User is in place {this.state.previousRoom !== undefined ? this.state.previousRoom.name : "UNKNOWN" }
             </div>

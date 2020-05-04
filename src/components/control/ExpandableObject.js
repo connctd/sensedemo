@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../App.css';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 export default class ExpandableObject extends React.Component {
     constructor(props) {
@@ -39,11 +40,15 @@ export default class ExpandableObject extends React.Component {
                     </svg>
                     &nbsp; {this.state.message}
                 </div>
-                <div className={this.state.json == null ? 'LogEntry Hidden' : 'LogEntry'}>
+                <div className={this.state.json == null ? 'LogEntryButton Hidden' : 'LogEntryButton'}>
                     <button
                         className={this.state.exploded ? 'HideButton' : 'ShowButton'} onClick={this.toggle}>
                         {this.state.exploded ? 'hide' : 'show'}
-                    </button>
+                    </button>&nbsp;
+                    <CopyToClipboard className={this.state.copied ? 'CopiedButton' : 'CopyButton'} text={this.state.json}
+                        onCopy={() => this.setState({ copied: true })} onMouseOver={() => this.setState({ copied: false })}>
+                        <button>copy</button>
+                    </CopyToClipboard>
                 </div>
                 <pre className={this.state.exploded ? 'Code' : 'Code Hidden'}>
                     {this.state.json}
