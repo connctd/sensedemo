@@ -9,6 +9,8 @@ export default class Thing extends React.Component {
     constructor(props) {
         super(props);
 
+        this.thingRef = React.createRef();
+
         this.state = { data: this.props.data, connected: false }
         this.updateConnected = this.updateConnected.bind(this);
     }
@@ -32,6 +34,7 @@ export default class Thing extends React.Component {
         var node;
         if (this.props.data.details.type === 'lamp') {
             node = <Lamp
+                        ref={this.thingRef}
                         data={this.state.data}
                         callbackConnected={this.updateConnected}
                         key={data.id}
@@ -42,6 +45,7 @@ export default class Thing extends React.Component {
                     />;
         } else if (this.props.data.details.type === 'motionsensor') {
             node = <MotionSensor
+                        ref={this.thingRef}
                         data={this.state.data}
                         callbackConnected={this.updateConnected}
                         key={data.id}
@@ -54,6 +58,7 @@ export default class Thing extends React.Component {
             node = null;
         } else {
             node = <Unknown
+                        ref={this.thingRef}
                         data={this.state.data}
                         callbackConnected={this.updateConnected}
                         key={data.id}
@@ -65,7 +70,13 @@ export default class Thing extends React.Component {
         }
 
         return (
-            <svg onMouseOver={this.hover} onMouseOut={this.hoverOut}>
+            <svg onMouseOver={this.hover} 
+                    onMouseOut={this.hoverOut}
+                    onContextMenu={
+                        event => {
+                            this.props.mouseInputHandlerRef.current.onThingRightClick(event, this.state.data);
+                        }
+                    }>
                 <svg>
                     {node}
                 </svg>

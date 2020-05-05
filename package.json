@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.1.2",
     "jsonld": "^2.0.2",
     "react": "^16.13.1",
+    "react-contexify": "^4.1.1",
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",

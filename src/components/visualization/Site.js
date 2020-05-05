@@ -13,8 +13,10 @@ export default class Site extends React.Component {
 
         let buildings = data.buildings;
         let renderedBuildings = buildings.map((building) => 
-            <Building key={building.id} 
+            <Building 
+                key={building.id} 
                 data={building} offset={subElementOffset}
+                mouseInputHandlerRef={this.props.mouseInputHandlerRef}
             />
         )
         

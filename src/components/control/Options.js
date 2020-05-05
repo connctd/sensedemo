@@ -24,6 +24,7 @@ export default class Options extends React.Component {
         this.setState(newState);
 
         this.props.canvasRef.current.setDimensions(newState.currZoom);
+        this.props.mouseInputHandlerRef.current.setScale(newState.currZoom);
     }
 
     zoomDecrease(event) {
@@ -33,6 +34,7 @@ export default class Options extends React.Component {
         this.setState(newState);
 
         this.props.canvasRef.current.setDimensions(newState.currZoom);
+        this.props.mouseInputHandlerRef.current.setScale(newState.currZoom);
     }
 
     switchDetectionMode(event) {
@@ -41,15 +43,15 @@ export default class Options extends React.Component {
         this.setState(newState);
         
         if (event.target.value === "none") {
-            this.props.canvasRef.current.setAllowPlaceUser(false);
+            this.props.mouseInputHandlerRef.current.setAllowPlaceUser(false);
             this.props.detectionUserTrackerRef.current.setActive(false);
             this.props.detectionMotionTrackerRef.current.setActive(false);
         } else if (event.target.value === "userpos") {
-            this.props.canvasRef.current.setAllowPlaceUser(true);
+            this.props.mouseInputHandlerRef.current.setAllowPlaceUser(true);
             this.props.detectionUserTrackerRef.current.setActive(true);
             this.props.detectionMotionTrackerRef.current.setActive(false);
         } else if (event.target.value === "sensors") {
-            this.props.canvasRef.current.setAllowPlaceUser(false);
+            this.props.mouseInputHandlerRef.current.setAllowPlaceUser(false);
             this.props.detectionUserTrackerRef.current.setActive(false);
             this.props.detectionMotionTrackerRef.current.setActive(true);
         }

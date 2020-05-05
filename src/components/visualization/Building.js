@@ -58,7 +58,9 @@ export default class Building extends React.Component {
                         </svg>
                         <svg visibility={this.state.storeyVisibility[storey.level]}>
                             <Storey
-                                data={storey} offset={subElementOffset}
+                                data={storey}
+                                offset={subElementOffset}
+                                mouseInputHandlerRef={this.props.mouseInputHandlerRef}
                             />
                         </svg>
                     </svg> 

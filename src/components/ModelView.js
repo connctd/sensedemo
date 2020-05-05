@@ -3,6 +3,7 @@ import './../App.css';
 import Canvas from './visualization/Canvas.js';
 import Options from './control/Options.js';
 import ModelLog from './control/ModelLog.js';
+import MouseInputHandler from './control/MouseInputHandler.js';
 import NotificationLog from './control/NotificationLog.js';
 import ControlLights from './rules/ControlLights.js';
 import EventBus from './detection/EventBus.js';
@@ -553,6 +554,7 @@ export default class ModelView extends React.Component {
         this.eventBusRef = React.createRef();
         this.detectionUserTrackerRef = React.createRef();
         this.detectionMotionTrackerRef = React.createRef();
+        this.mouseInputHandlerRef = React.createRef();
 
         this.state = { inputModel: inputModel, outputModel: null, logEntries: [], notificationEntries: [] };
 
@@ -662,14 +664,23 @@ export default class ModelView extends React.Component {
         } else {
             return (
                 <div className="App">
-                    <Canvas ref={this.canvasAreaRef} scale="80" model={this.state.outputModel} offset={offset} />
+                    <MouseInputHandler ref={this.mouseInputHandlerRef} scale="80" model={this.state.outputModel} />
+                    <Canvas ref={this.canvasAreaRef} scale="80" model={this.state.outputModel} mouseInputHandlerRef={this.mouseInputHandlerRef} offset={offset} />
                     <ModelLog entries={this.state.logEntries} />
                     <NotificationLog entries={this.state.notificationEntries} />
                     <EventBus ref={this.eventBusRef} />
                     <UserTracker ref={this.detectionUserTrackerRef} model={this.state.outputModel} offset={offset} eventBusRef={this.eventBusRef}/>
                     <MotionTracker ref={this.detectionMotionTrackerRef} model={this.state.outputModel} offset={offset} eventBusRef={this.eventBusRef} />
                     <ControlLights eventBusRef={this.eventBusRef} model={this.state.outputModel} offset={offset} />
-                    <Options defaultZoom={80} detectionMotionTrackerRef={this.detectionMotionTrackerRef} detectionUserTrackerRef={this.detectionUserTrackerRef} canvasRef={this.canvasAreaRef} model={this.state.inputModel} modelChangeHandler={this.onFetchedModelChanged} />
+                    <Options
+                        defaultZoom={80}
+                        detectionMotionTrackerRef={this.detectionMotionTrackerRef}
+                        detectionUserTrackerRef={this.detectionUserTrackerRef}
+                        mouseInputHandlerRef={this.mouseInputHandlerRef}
+                        canvasRef={this.canvasAreaRef}
+                        model={this.state.inputModel}
+                        modelChangeHandler={this.onFetchedModelChanged}
+                    />
                 </div>
             );
         }

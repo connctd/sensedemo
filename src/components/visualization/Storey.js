@@ -16,7 +16,9 @@ export default class Storey extends React.Component {
         let rooms = data.rooms;
         let rendered = rooms.map((room) =>
             <Room key={room.id}
-                data={room} offset={subElementOffset}
+                data={room}
+                offset={subElementOffset}
+                mouseInputHandlerRef={this.props.mouseInputHandlerRef}
             />
         )
 
