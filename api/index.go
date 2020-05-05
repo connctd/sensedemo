@@ -87,6 +87,9 @@ func forwardRequest(url string, w http.ResponseWriter, r *http.Request, forwardH
 	if strings.HasPrefix(url, "https://iktsystems.goip.de") {
 		w.Header().Add("Access-Control-Allow-Headers", "content-type")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
+	} else if strings.HasPrefix(url, "https://schema.org") {
+		w.Header().Add("Access-Control-Allow-Headers", "content-type")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 
 	w.WriteHeader(resp.StatusCode)

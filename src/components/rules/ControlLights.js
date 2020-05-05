@@ -89,22 +89,30 @@ export default class ControlLights extends React.Component {
             return
         }
 
+        var isInBuilding = false;
         for (var rID = 0; rID < this.state.rooms.length; rID++) {
             var room = this.state.rooms[rID];
 
             if (event.relation === CoordinateRelationAbsolute) {
                 var relResult = ClassifyPoint(room.polygonAbsolute, [event.coords.x, event.coords.y]);
                 if (relResult === -1) {
+                    isInBuilding = true;
                     this.onUserInRoom(room);
                     return;
                 }
             } else {
                 var absResult = ClassifyPoint(room.polygonRelative, [event.coords.x, event.coords.y]);
                 if (absResult === -1) {
+                    isInBuilding = true;
                     this.onUserInRoom(room);
                     return;
                 }
             }
+        }
+
+        if (!isInBuilding) {
+            var outsideRoom = {name: "Outside", things: []};
+            this.onUserInRoom(outsideRoom);
         }
     }
 

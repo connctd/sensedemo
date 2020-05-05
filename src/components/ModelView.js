@@ -637,12 +637,9 @@ export default class ModelView extends React.Component {
     }
 
     addNotificationEntry(severity, message, obj) {
-        var newDate = new Date();
-        var dateString = newDate.toUTCString();
-
         var newState = this.state;
         newState.notificationEntries.push(<ExpandableObject
-            key={newState.logEntries.length + "-" + dateString}
+            key={"notification-" + newState.notificationEntries.length}
             severity={severity}
             message={message}
             json={obj != null ? JSON.stringify(obj, null, 4) : null}
