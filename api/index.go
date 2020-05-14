@@ -30,7 +30,8 @@ func extractRequestedURL(requestedURL string) (string, error) {
 
 	decodedURL, err := base64.StdEncoding.DecodeString(escapedURL)
 	if err != nil {
-		return "", errors.New("Failed to decode model url")
+		fmt.Println(err)
+		return "", errors.New("Failed to decode model url: " + escapedURL)
 	}
 
 	return string(decodedURL), nil

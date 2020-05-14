@@ -10,7 +10,7 @@ import (
 
 const (
 	connctdPrefix = "https://api.connctd.io"
-	fhdoPrefix    = "https://iktsystems.goip.de:443/ict-gw/v1/things"
+	fhdoPrefix    = "https://iktsystems.goip.de:443"
 )
 
 // HandleBackendCall intercepts backend calls, addes headers and forwards

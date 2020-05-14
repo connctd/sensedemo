@@ -29,7 +29,7 @@ export default class ModelSelection extends React.Component {
                 <form onSubmit={this.loadLocationModel}>
                     <input className="ModelInput" type="text" name="url" onChange={this.updateInputValue} value={this.state.inputValue}></input>
                     <br />
-                    <button className="ModelButton"  type="submit">Load</button>
+                    <button className="Button GreenBackground" type="submit">Load</button>
                 </form>
             </div>
         )
