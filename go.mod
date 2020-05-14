@@ -1,3 +1,3 @@
-module github.com/connctd/sensedemo
+module github.com/connctd/sensedemo/api
 
 go 1.14
