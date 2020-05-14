@@ -1,4 +1,11 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.go",
+      "use": "@now/go"
+    }
+  ],
   "env": {
     "SENSE_CONNCTD_TOKEN": "@sense-connctd-token",
     "SENSE_FH_TOKEN": "@sense-fh-token",
