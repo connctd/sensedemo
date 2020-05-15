@@ -38,8 +38,9 @@ button:focus {
 .StartKnownModelsButton {
   padding:10px;
   margin-top: 10px;
-  border-radius: 5px;
+  border-radius: 0px;
   width: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .OptionsContainer {

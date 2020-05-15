@@ -1,8 +1,40 @@
 {
   "version": 2,
-  "env": {
-    "SENSE_CONNCTD_TOKEN": "@sense-connctd-token",
-    "SENSE_FH_TOKEN": "@sense-fh-token",
-    "SENSE_FH_KEY": "@sense-fh-key"
-  }
+  "builds":[
+      {
+         "use":"@now/go",
+         "src":"api/*.go"
+      },
+      {
+         "src":"package.json",
+         "use":"@vercel/static-build",
+         "config":{
+            "zeroConfig":true,
+            "framework":"create-react-app"
+         }
+      }
+   ],
+   "routes": [
+      {
+         "src": "/api/backend",
+         "dest": "/api/backend.go"
+      },
+      {
+         "src": "/api/schema",
+         "dest": "/api/schema.go"
+      },
+      {
+         "src": "/api/index",
+         "dest": "/api/index.go"
+      },
+      {
+         "src": "/api/redirect",
+         "dest": "/api/redirect.go"
+      }
+   ],
+   "env": {
+      "SENSE_CONNCTD_TOKEN": "@sense-connctd-token",
+      "SENSE_FH_TOKEN": "@sense-fh-token",
+      "SENSE_FH_KEY": "@sense-fh-key"
+   }
 }
