@@ -21,7 +21,7 @@ func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
 	requestedURL := r.URL.Query().Get("data")
 	url, err := extractRequestedURL(requestedURL)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("Failed extract request url when handling backend call: " + err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

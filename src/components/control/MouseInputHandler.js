@@ -10,16 +10,20 @@ export default class MouseInputHandler extends React.Component {
 
         this.showAddThingDescriptionWindow = this.showAddThingDescriptionWindow.bind(this);
         this.hideAddThingDescriptionWindow = this.hideAddThingDescriptionWindow.bind(this);
+        this.removeThingDescription = this.removeThingDescription.bind(this);
 
         var roomInformation = {name: "", id: "", x: "", y: ""};
+        var thingInformation = { id: "" };
 
         this.state = { allowPlaceUser: false,
             scale: this.props.scale,
             showRoomContextMenu: false,
+            showThingContextMenu: false,
             contextMenuPosX: 0,
             contextMenuPosY: 0,
             addThingDescriptionVisible: false,
-            roomInformation: roomInformation
+            roomInformation: roomInformation,
+            thingInformation: thingInformation
         };
     }
 
@@ -43,6 +47,14 @@ export default class MouseInputHandler extends React.Component {
         this.setState(newState);
     }
 
+    setShowThingContextMenu(show, x, y) {
+        var newState = this.state;
+        newState.showThingContextMenu = show;
+        newState.contextMenuPosX = x;
+        newState.contextMenuPosY = y;
+        this.setState(newState);
+    }
+
     setAddThingDescriptionVisible(vis) {
         var newState = this.state;
         newState.addThingDescriptionVisible = vis;
@@ -56,8 +68,16 @@ export default class MouseInputHandler extends React.Component {
         this.setState(newState);
     }
 
+    setThingInformation(id) {
+        var thingInformation = { id: id };
+        var newState = this.state;
+        newState.thingInformation = thingInformation;
+        this.setState(newState);
+    }
+
     onCanvasLeftClick(event) {
         this.setShowRoomContextMenu(false, 0, 0);
+        this.setShowThingContextMenu(false, 0, 0);
 
         if (!this.state.allowPlaceUser) {
             return;
@@ -130,8 +150,13 @@ export default class MouseInputHandler extends React.Component {
     }
 
     onThingRightClick(event, elem) {
+        this.setShowRoomContextMenu(false, 0, 0);
+        this.setShowThingContextMenu(true, event.pageX + 1, event.pageY + 1);
+
         console.log(event);
         console.log(elem);
+
+        this.setThingInformation(elem.id);
 
         event.preventDefault();
         event.stopPropagation();
@@ -139,6 +164,7 @@ export default class MouseInputHandler extends React.Component {
     }
 
     onRoomRightClick(event, ref, elem) {
+        this.setShowThingContextMenu(false, 0, 0);
         this.setShowRoomContextMenu(true, event.pageX+1, event.pageY+1);
         
         var svg = event.currentTarget;
@@ -153,7 +179,10 @@ export default class MouseInputHandler extends React.Component {
         // get the root point
         var polygonOriginPoint = ref.current.points[0];
 
-        this.setRoomInformation(elem.name, elem.id, canvasPosition.x - polygonOriginPoint.x, canvasPosition.y - polygonOriginPoint.y);
+        var posX = Math.round((canvasPosition.x - polygonOriginPoint.x) * 100) / 100
+        var posY = Math.round((canvasPosition.y - polygonOriginPoint.y) * 100) / 100
+
+        this.setRoomInformation(elem.name, elem.id, posX, posY);
 
         event.preventDefault();
         event.stopPropagation();
@@ -170,6 +199,11 @@ export default class MouseInputHandler extends React.Component {
         this.setAddThingDescriptionVisible(false);
     }
 
+    removeThingDescription() {
+        this.setShowThingContextMenu(false, 0, 0);
+        console.log("Not implemented. We first need a better approach for referencing tds from within locations");
+    } 
+
     render() {
         return (
             <div>
@@ -177,6 +211,10 @@ export default class MouseInputHandler extends React.Component {
 
                 <div className={this.state.showRoomContextMenu ? 'ContextMenu' : 'ContextMenu Hidden'} style={{ left: this.state.contextMenuPosX, top: this.state.contextMenuPosY }}>
                     <button className="ContextMenuButton" onClick={this.showAddThingDescriptionWindow}>Add Thing Description here</button>
+                </div>
+
+                <div className={this.state.showThingContextMenu ? 'ContextMenu' : 'ContextMenu Hidden'} style={{ left: this.state.contextMenuPosX, top: this.state.contextMenuPosY }}>
+                    <button className="ContextMenuButton" onClick={this.removeThingDescription}>Remove Thing Description</button>
                 </div>
             </div>
         )

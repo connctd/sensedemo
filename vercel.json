@@ -30,6 +30,10 @@
       {
          "src": "/api/redirect",
          "dest": "/api/redirect.go"
+      },
+      {
+         "src": "/api/add",
+         "dest": "/api/add.go"
       }
    ],
    "env": {

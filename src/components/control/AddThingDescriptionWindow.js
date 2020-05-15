@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../App.css';
+import { asInternalURL } from '../../utils/Common.js'
 
 export default class AddThingDescriptionWindow extends React.Component {
     constructor(props) {
@@ -11,29 +12,23 @@ export default class AddThingDescriptionWindow extends React.Component {
     }
 
     async addThingDescription(f) {
-        console.log(f.currentTarget.thingLink.value);
-
-        /*
-        var xconfig = {
+        f.preventDefault();
+        
+        var newLocation = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ "value": pos.x.toString() })
+            body: JSON.stringify({ "td": f.currentTarget.thingLink.value, "x": this.props.roomInformation.x, "y": this.props.roomInformation.y })
         }
 
-        var url = "https://api.connctd.io/api/v1/things/a359ce93-098c-41ec-9ef1-8c2846d258f7/components/tracker/properties/x";
+        var url = this.props.roomInformation.id;
 
-        var respX = await fetch(asInternalURL(xURL, "backend"), xconfig);
-        var respY = await fetch(asInternalURL(yURL, "backend"), yconfig);
+        var resp = await fetch(asInternalURL(url, "add"), newLocation);
 
-        if (respX.status !== 204 && respY.status !== 204) {
+        if (resp.status !== 200) {
             console.error("Bad response");
         }
-        */
-
-        f.preventDefault();
-        this.props.cancelHandler();
     }
 
     render() {
@@ -49,7 +44,7 @@ export default class AddThingDescriptionWindow extends React.Component {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td>ID</td>
+                                        <td width="40%">ID</td>
                                         <td>{id}</td>
                                     </tr>
                                     <tr>
