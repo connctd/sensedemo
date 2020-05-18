@@ -21,9 +21,10 @@ type addTdPayload struct {
 
 // HandleAddCall intercepts an add call since adding tds differs
 func HandleAddCall(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "content-type")
+
 	if r.Method == http.MethodOptions {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "content-type")
 		w.WriteHeader(http.StatusOK)
 	} else if r.Method == http.MethodPost {
 		// ignore cert errors
@@ -125,12 +126,15 @@ func addViaFHDoTD(targetLocation string, tdToAdd addTdPayload) error {
 		"X-Host-Override": "wot-device-api",
 	}
 
+	geometry := geometry{Types: []string{"geo:Point"}, Coordinates: []float32{tdToAdd.X, tdToAdd.Y}}
+	payload := location{Context: defaultContext, Types: defaultTypes, ID: tdToAdd.TD, Geometry: geometry}
+
 	err := doRequest(context.Background(),
 		http.DefaultClient,
 		http.MethodPost,
-		targetLocation+"?url="+tdToAdd.TD,
+		targetLocation,
 		http.StatusOK,
-		nil,
+		payload,
 		nil, headers)
 
 	if err != nil {

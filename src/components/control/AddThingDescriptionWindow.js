@@ -26,8 +26,11 @@ export default class AddThingDescriptionWindow extends React.Component {
 
         var resp = await fetch(asInternalURL(url, "add"), newLocation);
 
-        if (resp.status !== 200) {
+        if (resp.status !== 201) {
             console.error("Bad response");
+            alert("Looks like something has failed. Error code: "+resp.status);
+        } else {
+            window.location.reload();
         }
     }
 
