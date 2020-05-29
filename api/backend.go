@@ -38,7 +38,6 @@ func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
 		additionalHeaders["Authorization"] = "Bearer " + token
 		additionalHeaders["x-api-key"] = apiKey
 		additionalHeaders["X-Host-Override"] = "wot-device-api"
-		r.Header.Del("Origin")
 	}
 
 	forwardRequest(url, w, r, additionalHeaders)
