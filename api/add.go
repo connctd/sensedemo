@@ -126,8 +126,16 @@ func addViaFHDoTD(targetLocation string, tdToAdd addTdPayload) error {
 		"X-Host-Override": "wot-device-api",
 	}
 
-	geometry := geometry{Types: []string{"geo:Point"}, Coordinates: []float32{tdToAdd.X, tdToAdd.Y}}
-	payload := location{Context: defaultContext, Types: defaultTypes, ID: tdToAdd.TD, Geometry: geometry}
+	geometry := geometry{
+		Types: []string{"geo:Point"},
+		Coordinates: []float32{tdToAdd.X, tdToAdd.Y},
+		Type: "org.ict.model.bot.jsongeo.Point"}
+	payload := location{
+		Context: defaultContext,
+		Types: defaultTypes,
+		ID: tdToAdd.TD,
+		Geometry: geometry,
+	}
 
 	err := doRequest(context.Background(),
 		http.DefaultClient,
@@ -212,6 +220,7 @@ type location struct {
 type geometry struct {
 	Types       []string  `json:"@type"`
 	Coordinates []float32 `json:"geo:coordinates"`
+	Type string `json:"type,omitempty"`
 }
 
 var defaultContext = map[string]string{
