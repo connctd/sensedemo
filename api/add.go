@@ -124,6 +124,7 @@ func addViaFHDoTD(targetLocation string, tdToAdd addTdPayload) error {
 		"Authorization":   "Bearer " + token,
 		"x-api-key":       apiKey,
 		"X-Host-Override": "wot-device-api",
+		"Content-Type": "application/ld+json",
 	}
 
 	geometry := geometry{
@@ -131,8 +132,7 @@ func addViaFHDoTD(targetLocation string, tdToAdd addTdPayload) error {
 		Coordinates: []float32{tdToAdd.X, tdToAdd.Y},
 		Type: "org.ict.model.bot.jsongeo.Point"}
 	payload := location{
-		Context: defaultContext,
-		Types: defaultTypes,
+		Types: expandedTypes,
 		ID: tdToAdd.TD,
 		Geometry: geometry,
 	}
@@ -141,7 +141,7 @@ func addViaFHDoTD(targetLocation string, tdToAdd addTdPayload) error {
 		http.DefaultClient,
 		http.MethodPost,
 		targetLocation,
-		http.StatusOK,
+		http.StatusCreated,
 		payload,
 		nil, headers)
 
@@ -211,7 +211,7 @@ func doRequest(
 }
 
 type location struct {
-	Context  map[string]string `json:"@context"`
+	Context  map[string]string `json:"@context,omitempty"`
 	Types    []string          `json:"@type"`
 	ID       string            `json:"@id"`
 	Geometry geometry          `json:"geo:geometry"`
@@ -229,7 +229,15 @@ var defaultContext = map[string]string{
 	"geo": "https://purl.org/geojson/vocab#",
 }
 
-var defaultTypes = []string{"bot:Element", "wot:Thing"}
+var expandedTypes = []string{
+	"https://www.w3.org/2019/wot/td#Thing",
+	"https://w3id.org/bot#Element",
+}
+
+var defaultTypes = []string{
+	"bot:Element",
+	"wot:Thing",
+}
 
 type locationAddResp struct {
 	ID string `json:"id"`
