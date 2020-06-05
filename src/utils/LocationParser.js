@@ -10,7 +10,7 @@ export const parseModel = async (model, successCallback, errorCallback, warningC
 
     var compactedModel = await getReducedModel(model, successCallback, errorCallback, warningCallback, infoCallback, notificationCallback);
 
-    notificationCallback("Step 2/4: Preprocess model (expand & compact)", model)
+    notificationCallback("Step 2/4: Preprocess model (expand & compact)", compactedModel)
 
     if (compactedModel !== undefined) {
         notificationCallback("Step 3/4: Traverse model, resolve tds and translate", compactedModel)
@@ -18,7 +18,7 @@ export const parseModel = async (model, successCallback, errorCallback, warningC
         
         if (extractedModel !== undefined) {
             successCallback("Finished", extractedModel);
-            notificationCallback("Step 4/4: Pass translated model to renderer", extractedModel)
+            notificationCallback("Step 4/4: Pass translated model to rule engine and renderer", extractedModel)
         }
     }
 };
