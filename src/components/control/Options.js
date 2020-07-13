@@ -100,7 +100,7 @@ export default class Options extends React.Component {
                 <br /><br />
                 <button className="OptionsButton" onClick={this.toggleFeedOne}>Feed 1<br />Berlin</button>
                 <br /><br />
-                <button className="OptionsButton" onClick={this.toggleFeedTwo}>Feed 2<br />Dortmund</button>
+                <button className="OptionsButton" onClick={this.toggleFeedTwo}>Feed 2<br />Drtmnd</button>
                 <br /><br />
                 <button className="OptionsButton" onClick={this.exit}>Exit<br />&times;</button>
                 <br /><br />
