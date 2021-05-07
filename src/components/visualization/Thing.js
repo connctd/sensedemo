@@ -3,6 +3,7 @@ import '../../App.css';
 import Lamp from '../device/Lamp.js';
 import Unknown from '../device/Unknown.js';
 import MotionSensor from '../device/MotionSensor.js';
+import Switch from '../device/Switch.js';
 import { getPositionWithOffset } from '../../utils/Positioning.js'
 
 export default class Thing extends React.Component {
@@ -45,6 +46,17 @@ export default class Thing extends React.Component {
                     />;
         } else if (this.props.data.details.type === 'motionsensor') {
             node = <MotionSensor
+                        ref={this.thingRef}
+                        data={this.state.data}
+                        callbackConnected={this.updateConnected}
+                        key={data.id}
+                        x={elementPosition.x}
+                        y={elementPosition.y}
+                        width={20}
+                        height={20}
+                    />;
+        } else if (this.props.data.details.type === 'switch') {
+            node = <Switch
                         ref={this.thingRef}
                         data={this.state.data}
                         callbackConnected={this.updateConnected}

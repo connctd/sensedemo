@@ -24,7 +24,7 @@ export default class StartView extends React.Component {
                 <h1>Known models</h1>
                 <div>
                     <button className="StartKnownModelsButton" value="https://193.25.30.222:2443/ict-gw/v1/sites/senseDemoSite" onClick={this.selectModel}>Sense demo site v1 (FH Do)</button><br />
-                    <button className="StartKnownModelsButton" value="https://api.connctd.io/api/betav1/wot/locations/b55d0183-4234-4b61-8c56-efc2da63f1a1?resolve=true" onClick={this.selectModel}>Sense demo site v1 (connctd)</button>
+                    <button className="StartKnownModelsButton" value="https://api.connctd.io/api/betav1/wot/locations/8cf59011-4571-45b1-802b-bf5b866b8f89?resolve=true" onClick={this.selectModel}>Sense demo site v1 (connctd)</button>
                 </div>
                 <div className="StartFooter">
                     <img src="/images/logo1.png" height="30" alt="logo"/>

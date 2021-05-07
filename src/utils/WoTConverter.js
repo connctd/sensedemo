@@ -10,6 +10,8 @@ export const extractThing = (model, errorCallback, warningCallback, infoCallback
         return extractPositionTracker(model, errorCallback, warningCallback, infoCallback);
     } else if (isMotionSensor(model)) {
         return extractMotionSensor(model, errorCallback, warningCallback, infoCallback);
+    } else if (isSwitch(model)) {
+        return extractSwitch(model, errorCallback, warningCallback, infoCallback);
     }
     
     warningCallback("Unhandled thing type", model);
@@ -36,14 +38,15 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
     for (var currPropertyIndex = 0; currPropertyIndex < properties.length; currPropertyIndex++) {
         var currProperty = properties[currPropertyIndex];
 
-        if (expectType(currProperty, "iot:SwitchStatus")) {
+        if (expectType(currProperty, "iot:SwitchStatus") && !expectType(currProperty, "iot:Timeseries")) {
             // we need to figure out which name the property has
             var propertyFields = getArrayNodeOrDefault(currProperty, "wotschema:properties", [], warningCallback);
             for (var currFieldIndex = 0; currFieldIndex < propertyFields.length; currFieldIndex++) {
+
                 var currPropertyField = propertyFields[currFieldIndex];
                 
                 if (expectType(currPropertyField, "iot:StatusData")) {
-                    stateProperty = getNodeOrDefault(currPropertyField, "@index", "", warningCallback);
+                    stateProperty = getNodeOrDefault(currPropertyField, "wotschema:propertyName", "", warningCallback);
                     break;
                 }
             }
@@ -76,7 +79,7 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
 
                 
                 if (expectType(currActionPropertyField, "iot:StatusData")) {
-                    switchProperty = getNodeOrDefault(currActionPropertyField, "@index", "", warningCallback);
+                    switchProperty = getNodeOrDefault(currActionPropertyField, "wotschema:propertyName", "", warningCallback);
                     break;
                 }
             }
@@ -91,7 +94,7 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
             var target = getNodeOrDefault(actionForm, "wotmedia:hasTarget", "{}", warningCallback);
 
             if (props.length !== 1) {
-                console.log("Sorting out action " + currAction["@index"] +" since it doesn't look like a simple turn on/off action");
+                console.log("Sorting out action " + currAction["wotschema:propertyName"] +" since it doesn't look like a simple turn on/off action");
                 continue;
             }
 
@@ -128,7 +131,7 @@ const extractMotionSensor = (model, errorCallback, warningCallback, infoCallback
                 var currPropertyField = propertyFields[currFieldIndex];
 
                 if (expectType(currPropertyField, "iot:MotionTypeData")) {
-                    stateProperty = getNodeOrDefault(currPropertyField, "@index", "", warningCallback);
+                    stateProperty = getNodeOrDefault(currPropertyField, "wotschema:propertyName", "", warningCallback);
                     break;
                 }
             }
@@ -208,4 +211,77 @@ export const findPositionTracker = (model) => {
     }
 
     return;
+}
+
+const isSwitch = (model) => {
+    if (expectType(model, "iot:BinarySwitchControl")) {
+        return true;
+    }
+
+    return false;
+}
+
+const extractSwitch = (model, errorCallback, warningCallback, infoCallback) => {
+    var id = getNodeOrDefault(model, "@id", "UnknownID", warningCallback);
+    var name = getNodeOrDefault(model, "purl:title", "UnknownThing", warningCallback);
+    var properties = getArrayNodeOrDefault(model, "wot:hasPropertyAffordance", [], warningCallback);
+    var actions = getArrayNodeOrDefault(model, "wot:hasActionAffordance", [], warningCallback);
+
+    // search for the relevant property that reflects the on off state
+    var stateURL = "";
+    var stateProperty = "";
+    for (var currPropertyIndex = 0; currPropertyIndex < properties.length; currPropertyIndex++) {
+        var currProperty = properties[currPropertyIndex];
+
+        if (expectType(currProperty, "iot:SwitchStatus") && !expectType(currProperty, "iot:Timeseries")) {
+            // we need to figure out which name the property has
+            var propertyFields = getArrayNodeOrDefault(currProperty, "wotschema:properties", [], warningCallback);
+            for (var currFieldIndex = 0; currFieldIndex < propertyFields.length; currFieldIndex++) {
+
+                var currPropertyField = propertyFields[currFieldIndex];
+                
+                if (expectType(currPropertyField, "iot:StatusData")) {
+                    stateProperty = getNodeOrDefault(currPropertyField, "wotschema:propertyName", "", warningCallback);
+                    break;
+                }
+            }
+
+            if (stateProperty === "") {
+                errorCallback("Switch has no property output with type iot:StatusData", currProperty);
+            }
+
+            var form = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+            var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
+            stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
+            
+            break;
+        }
+    }
+
+    var switchOnURL = "";
+    var switchOffURL = "";
+
+    for (var currOnActionIndex = 0; currOnActionIndex < actions.length; currOnActionIndex++) {
+        var currOnAction = actions[currOnActionIndex];
+
+        if (expectType(currOnAction, "iot:TurnOn")) {
+            var actionOnForm = getNodeOrDefault(currOnAction, "wot:hasForm", {}, warningCallback);
+            var targetOn = getNodeOrDefault(actionOnForm, "wotmedia:hasTarget", "{}", warningCallback);
+
+            switchOnURL = getNodeOrDefault(targetOn, "@id", "", warningCallback);
+        }
+    }
+
+    for (var currOffActionIndex = 0; currOffActionIndex < actions.length; currOffActionIndex++) {
+        var currOffAction = actions[currOffActionIndex];
+
+        if (expectType(currOffAction, "iot:TurnOff")) {
+            var actionOffForm = getNodeOrDefault(currOffAction, "wot:hasForm", {}, warningCallback);
+            var targetOff = getNodeOrDefault(actionOffForm, "wotmedia:hasTarget", "{}", warningCallback);
+
+            switchOffURL = getNodeOrDefault(targetOff, "@id", "", warningCallback);
+        }
+    }
+
+    return { "id": id, "name": name, "type": "switch", "stateProperty": stateProperty, "stateURL": asInternalURL(stateURL, "backend"), "switchOnURL": asInternalURL(switchOnURL, "backend"), "switchOffURL": asInternalURL(switchOffURL, "backend")};
 }

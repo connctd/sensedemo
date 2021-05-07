@@ -16,6 +16,7 @@ const (
 
 // HandleBackendCall intercepts backend calls, addes headers and forwards
 func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
+
 	// ignore cert errors
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
