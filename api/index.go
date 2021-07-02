@@ -88,6 +88,7 @@ func forwardRequest(url string, w http.ResponseWriter, r *http.Request, forwardH
 		w.Header().Add("Access-Control-Allow-Headers", "content-type")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	w.WriteHeader(resp.StatusCode)
 	w.Write(bodyBytes)

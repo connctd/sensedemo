@@ -55,7 +55,8 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
                 errorCallback("Lamp has no property output with type iot:StatusData", currProperty);
             }
 
-            var form = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+
+            var form = getFormWithType(currProperty, "wot:readProperty", warningCallback);
             var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
             stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
             
@@ -140,7 +141,7 @@ const extractMotionSensor = (model, errorCallback, warningCallback, infoCallback
                 errorCallback("Motion sensor has no property output with type iot:StatusData", currProperty);
             }
 
-            var form = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+            var form = getFormWithType(currProperty, "wot:readProperty", warningCallback);
             var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
             stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
             break;
@@ -172,15 +173,15 @@ const extractPositionTracker = (model, errorCallback, warningCallback, infoCallb
         var currProperty = properties[currPropertyIndex];
 
         if (expectType(currProperty, "iot:PositionX")) {
-            var xForm = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+            var xForm = getFormWithType(currProperty, "wot:readProperty", warningCallback);
             var xTarget = getNodeOrDefault(xForm, "wotmedia:hasTarget", "{}", warningCallback);
             xURL = getNodeOrDefault(xTarget, "@id", "", warningCallback);
         } else if (expectType(currProperty, "iot:PositionY")) {
-            var yForm = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+            var yForm = getFormWithType(currProperty, "wot:readProperty", warningCallback);
             var yTarget = getNodeOrDefault(yForm, "wotmedia:hasTarget", "{}", warningCallback);
             yURL = getNodeOrDefault(yTarget, "@id", "", warningCallback);
         } else if (expectType(currProperty, "iot:PositionZ")) {
-            var zForm = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+            var zForm = getFormWithType(currProperty, "wot:readProperty", warningCallback);
             var zTarget = getNodeOrDefault(zForm, "wotmedia:hasTarget", "{}", warningCallback);
             zURL = getNodeOrDefault(zTarget, "@id", "", warningCallback);
         }
@@ -229,28 +230,18 @@ const extractSwitch = (model, errorCallback, warningCallback, infoCallback) => {
 
     // search for the relevant property that reflects the on off state
     var stateURL = "";
-    var stateProperty = "";
+    var statePropertyPath = "";
     for (var currPropertyIndex = 0; currPropertyIndex < properties.length; currPropertyIndex++) {
         var currProperty = properties[currPropertyIndex];
 
         if (expectType(currProperty, "iot:SwitchStatus") && !expectType(currProperty, "iot:Timeseries")) {
-            // we need to figure out which name the property has
-            var propertyFields = getArrayNodeOrDefault(currProperty, "wotschema:properties", [], warningCallback);
-            for (var currFieldIndex = 0; currFieldIndex < propertyFields.length; currFieldIndex++) {
+            statePropertyPath = getPropertyPath(currProperty, "$", "iot:StatusData", warningCallback);
 
-                var currPropertyField = propertyFields[currFieldIndex];
-                
-                if (expectType(currPropertyField, "iot:StatusData")) {
-                    stateProperty = getNodeOrDefault(currPropertyField, "wotschema:propertyName", "", warningCallback);
-                    break;
-                }
-            }
-
-            if (stateProperty === "") {
+            if (statePropertyPath === "") {
                 errorCallback("Switch has no property output with type iot:StatusData", currProperty);
             }
 
-            var form = getNodeOrDefault(currProperty, "wot:hasForm", {}, warningCallback);
+            var form = getFormWithType(currProperty, "wot:readProperty", warningCallback);
             var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
             stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
             
@@ -283,5 +274,58 @@ const extractSwitch = (model, errorCallback, warningCallback, infoCallback) => {
         }
     }
 
-    return { "id": id, "name": name, "type": "switch", "stateProperty": stateProperty, "stateURL": asInternalURL(stateURL, "backend"), "switchOnURL": asInternalURL(switchOnURL, "backend"), "switchOffURL": asInternalURL(switchOffURL, "backend")};
+    return { "id": id, "name": name, "type": "switch", "statePropertyPath": statePropertyPath, "stateURL": asInternalURL(stateURL, "backend"), "switchOnURL": asInternalURL(switchOnURL, "backend"), "switchOffURL": asInternalURL(switchOffURL, "backend")};
+}
+
+// searches for a form with specific type otherfwise returns empty object
+export const getFormWithType = (node, expectedType, warningCallback) => {
+    var forms = getArrayNodeOrDefault(node, "wot:hasForm", [], warningCallback);
+    for (var currFormIndex = 0; currFormIndex < forms.length; currFormIndex++) {
+        var currForm = forms[currFormIndex];
+        var currFormOperationType = getNodeOrDefault(currForm, "wotmedia:hasOperationType", {}, warningCallback);
+        var currFormOperationTypeID = getNodeOrDefault(currFormOperationType, "@id", "FormIDMissing", warningCallback);
+        if (currFormOperationTypeID === expectedType) {
+            return currForm;
+        }
+    }
+
+    return {}
+}
+
+// given a properties node this will search for the node have a given type and returns its json path
+export const getPropertyPath = (node, currPath, expectedSchemaType, warningCallback) => {
+    var noop = function() {};
+
+    var isArray = false;
+    var props = getArrayNodeOrDefault(node, "wotschema:properties", [], noop);
+    if (props.length === 0) {
+        isArray = true;
+        props = getArrayNodeOrDefault(node, "wotschema:items", [], noop);
+    }
+
+    for (var currPropsIndex = 0; currPropsIndex < props.length; currPropsIndex++) {
+        var currProp = props[0];
+
+        var updatedPath = currPath;
+        if (updatedPath === "") {
+            updatedPath = "$"
+        }
+
+        if (!isArray) {
+            updatedPath += "['"+getNodeOrDefault(currProp, "wotschema:propertyName", "UNKNOWN", noop)+"']";
+        } else {
+            updatedPath += "["+currPropsIndex+"]";
+        }
+
+        if (expectType(currProp, expectedSchemaType)) {
+            return updatedPath;
+        }
+
+        var childPath = getPropertyPath(currProp, updatedPath, expectedSchemaType, noop);
+        if (childPath !== "") {
+            return childPath;
+        }
+    }
+
+    return "";
 }

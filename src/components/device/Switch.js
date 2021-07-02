@@ -1,4 +1,5 @@
 import React from 'react';
+import jp from 'jsonpath';
 
 export default class Switch extends React.Component {
   constructor(props) {
@@ -25,7 +26,15 @@ export default class Switch extends React.Component {
         this.state.cbConnected(true);
         var jsonResp = await resp.json();
 
-        if (jsonResp[this.state.data.details.stateProperty]) {
+        var value = [];
+        try {
+          value = jp.query(jsonResp, this.state.data.details.statePropertyPath);
+        }
+        catch (e) {
+          console.log("Failed to extract state path data")          
+        }
+
+        if (value.length === 1 && value[0] === "1") {
           newState.fillColor = "#11CC66";
         } else {
           newState.fillColor = "#000000";
@@ -46,7 +55,7 @@ export default class Switch extends React.Component {
         viewBox="0 0 51 51" pointerEvents="bounding-box">
         <title>{this.props.data.details.name} {this.props.data.id}</title>
         <path id="Auswahl"
-        fill="none" stroke="black" stroke-width="3"
+        fill="none" stroke-width="3"
         d="M 10.02,3.65
            C 7.37,4.82 5.95,5.41 4.45,8.10
              2.13,12.28 2.99,26.60 3.00,32.00

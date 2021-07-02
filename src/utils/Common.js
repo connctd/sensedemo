@@ -6,15 +6,15 @@ export const asInternalURL = (input, prefix) => {
     var encoded = Buffer.from(input).toString('base64');
 
     // ignore local api addresses
-    if (input.startsWith("http://192.168.") || input.startsWith("http://10.")) {
-        return input;
-    } else {
+    //if (input.startsWith("http://192.168.") || input.startsWith("http://10.")) {
+    //    return input;
+    //} else {
         if (url.includes("localhost")) {
             return "http://localhost:8080/api/" + prefix + "?data=" + encodeURIComponent(encoded) + "#";
         } else {
             return arr[0] + "//" + arr[2] + "/api/" + prefix + "?data=" + encodeURIComponent(encoded) + "#";
         }
-    }
+    //}
 }
 
 // can be used to load remote json objects for schemata or wot tds

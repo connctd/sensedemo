@@ -18,6 +18,7 @@ export default class Lamp extends React.Component {
   }
 
   async resolveThingDescription() {
+      console.log(this.state.data.details)
       var resp = await fetch(this.state.data.details.stateURL);
       var newState = this.state;
 

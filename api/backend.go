@@ -12,6 +12,7 @@ const (
 	connctdPrefix = "https://api.connctd.io"
 	//fhdoPrefix    = "https://iktsystems.goip.de:443"
 	fhdoPrefix = "https://193.25.30.222:2443"
+	localABB   = "http://10.50.50.57"
 )
 
 // HandleBackendCall intercepts backend calls, addes headers and forwards
@@ -40,6 +41,9 @@ func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
 		additionalHeaders["Authorization"] = "Bearer " + token
 		additionalHeaders["x-api-key"] = apiKey
 		additionalHeaders["X-Host-Override"] = "wot-device-api"
+	} else if strings.HasPrefix(url, localABB) {
+		additionalHeaders["Authorization"] = "Basic aW5zdGFsbGVyOjlmc2pIYW52aGV3bzMybkg="
+		additionalHeaders["Origin"] = localABB
 	}
 
 	forwardRequest(url, w, r, additionalHeaders)
