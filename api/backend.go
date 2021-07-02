@@ -42,7 +42,9 @@ func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
 		additionalHeaders["x-api-key"] = apiKey
 		additionalHeaders["X-Host-Override"] = "wot-device-api"
 	} else if strings.HasPrefix(url, localABB) {
-		additionalHeaders["Authorization"] = "Basic aW5zdGFsbGVyOjlmc2pIYW52aGV3bzMybkg="
+		token := os.Getenv("ABB_TOKEN")
+
+		additionalHeaders["Authorization"] = "Basic " + token
 		additionalHeaders["Origin"] = localABB
 	}
 
