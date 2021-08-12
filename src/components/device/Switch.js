@@ -19,32 +19,21 @@ export default class Switch extends React.Component {
   }
 
   async resolveThingDescription() {
-      var resp = await fetch(this.state.data.details.stateURL);
-      var newState = this.state;
+    var newState = this.state;
 
-      if (resp.status === 200) {
-        this.state.cbConnected(true);
-        var jsonResp = await resp.json();
-
-        var value = [];
-        try {
-          value = jp.query(jsonResp, this.state.data.details.statePropertyPath);
-        }
-        catch (e) {
-          console.log("Failed to extract state path data")          
-        }
-
-        if (value.length === 1 && value[0] === "1") {
-          newState.fillColor = "#11CC66";
-        } else {
-          newState.fillColor = "#000000";
-        }
-
-        this.setState(newState);
+    var res = await this.state.data.details.handlerGetState();
+    if (res.error !== null) {
+      this.state.cbConnected(false);
+    } else {
+      if (res.value) {
+        newState.fillColor = "#11CC66";
+      } else {
+        newState.fillColor = "#000000";
       }
-      else {
-        this.state.cbConnected(false);  
-      }
+
+      this.state.cbConnected(true);
+      this.setState(newState);
+    }
   }
 
   render() {

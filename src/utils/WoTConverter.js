@@ -1,4 +1,5 @@
 import { asInternalURL, getNodeOrDefault, expectType, getArrayNodeOrDefault } from './Common.js';
+import jp from 'jsonpath';
 
 // parses a model and extracts all site->building->storey data
 export const extractThing = (model, errorCallback, warningCallback, infoCallback) => {
@@ -33,78 +34,13 @@ const extractLight = (model, errorCallback, warningCallback, infoCallback) => {
     var actions = getArrayNodeOrDefault(model, "wot:hasActionAffordance", [], warningCallback);
 
     // search for the relevant property that reflects the on off state
-    var stateURL = "";
-    var stateProperty = "";
-    for (var currPropertyIndex = 0; currPropertyIndex < properties.length; currPropertyIndex++) {
-        var currProperty = properties[currPropertyIndex];
+    var handlerGetState = generateGetPropertyHandler(properties, "iot:SwitchStatus", "iot:StatusData", interpreteAsBoolean, warningCallback, errorCallback);
+    var handlerActionTurnOn = generateActionHandler(actions, "iot:TurnOn", "iot:StatusData", new TypeDependentParameter(true, 1), warningCallback, errorCallback);
+    var handlerActionTurnOff = generateActionHandler(actions, "iot:TurnOff", "iot:StatusData", new TypeDependentParameter(false, 0), warningCallback, errorCallback);
 
-        if (expectType(currProperty, "iot:SwitchStatus") && !expectType(currProperty, "iot:Timeseries")) {
-            // we need to figure out which name the property has
-            var propertyFields = getArrayNodeOrDefault(currProperty, "wotschema:properties", [], warningCallback);
-            for (var currFieldIndex = 0; currFieldIndex < propertyFields.length; currFieldIndex++) {
-
-                var currPropertyField = propertyFields[currFieldIndex];
-                
-                if (expectType(currPropertyField, "iot:StatusData")) {
-                    stateProperty = getNodeOrDefault(currPropertyField, "wotschema:propertyName", "", warningCallback);
-                    break;
-                }
-            }
-
-            if (stateProperty === "") {
-                errorCallback("Lamp has no property output with type iot:StatusData", currProperty);
-            }
-
-
-            var form = getFormWithType(currProperty, "wot:readProperty", warningCallback);
-            var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
-            stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
-            
-            break;
-        }
-    }
-
-    var switchURL = "";
-    var switchProperty = "";
-    for (var currActionIndex = 0; currActionIndex < actions.length; currActionIndex++) {
-        var currAction = actions[currActionIndex];
-
-        if (expectType(currAction, "iot:TurnOn")) {
-            // get the input schema
-            var inputSchema = getNodeOrDefault(currAction, "wot:hasInputSchema", {}, warningCallback);
-            
-            // check which params this action accepts
-            var actionPropertyFields = getArrayNodeOrDefault(inputSchema, "wotschema:properties", [], warningCallback);
-            for (var currActionPropertyFieldIndex = 0; currActionPropertyFieldIndex < actionPropertyFields.length; currActionPropertyFieldIndex++) {
-                var currActionPropertyField = actionPropertyFields[currActionPropertyFieldIndex];
-
-                
-                if (expectType(currActionPropertyField, "iot:StatusData")) {
-                    switchProperty = getNodeOrDefault(currActionPropertyField, "wotschema:propertyName", "", warningCallback);
-                    break;
-                }
-            }
-
-            if (switchProperty === "") {
-                errorCallback("Action seems to match but has no fitting property", currAction);
-            }
-
-            var actionForm = getNodeOrDefault(currAction, "wot:hasForm", {}, warningCallback);
-            var input = getNodeOrDefault(currAction, "wot:hasInputSchema", {}, warningCallback);
-            var props = getArrayNodeOrDefault(input, "wotschema:properties", [], warningCallback);
-            var target = getNodeOrDefault(actionForm, "wotmedia:hasTarget", "{}", warningCallback);
-
-            if (props.length !== 1) {
-                console.log("Sorting out action " + currAction["wotschema:propertyName"] +" since it doesn't look like a simple turn on/off action");
-                continue;
-            }
-
-            switchURL = getNodeOrDefault(target, "@id", "", warningCallback);
-        }
-    }
-
-    return { "id": id, "name": name, "type": "lamp", "stateProperty": stateProperty, "stateURL": asInternalURL(stateURL, "backend"), "switchProperty": switchProperty, "switchURL": asInternalURL(switchURL, "backend")};
+    return { "id": id, "name": name, "type": "lamp", "handlerGetState": handlerGetState, "handlerActionTurnOn": handlerActionTurnOn, "handlerActionTurnOff": handlerActionTurnOff};
 }
+
 
 const isMotionSensor = (model) => {
     if (expectType(model, "iot:MotionControl")) {
@@ -229,52 +165,11 @@ const extractSwitch = (model, errorCallback, warningCallback, infoCallback) => {
     var actions = getArrayNodeOrDefault(model, "wot:hasActionAffordance", [], warningCallback);
 
     // search for the relevant property that reflects the on off state
-    var stateURL = "";
-    var statePropertyPath = "";
-    for (var currPropertyIndex = 0; currPropertyIndex < properties.length; currPropertyIndex++) {
-        var currProperty = properties[currPropertyIndex];
+    var handlerGetState = generateGetPropertyHandler(properties, "iot:SwitchStatus", "iot:StatusData", interpreteAsBoolean, warningCallback, errorCallback);
+    var handlerActionTurnOn = generateActionHandler(actions, "iot:TurnOn", "iot:StatusData", new TypeDependentParameter(true, 1), warningCallback, errorCallback);
+    var handlerActionTurnOff = generateActionHandler(actions, "iot:TurnOff", "iot:StatusData", new TypeDependentParameter(false, 0), warningCallback, errorCallback);
 
-        if (expectType(currProperty, "iot:SwitchStatus") && !expectType(currProperty, "iot:Timeseries")) {
-            statePropertyPath = getPropertyPath(currProperty, "$", "iot:StatusData", warningCallback);
-
-            if (statePropertyPath === "") {
-                errorCallback("Switch has no property output with type iot:StatusData", currProperty);
-            }
-
-            var form = getFormWithType(currProperty, "wot:readProperty", warningCallback);
-            var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
-            stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
-            
-            break;
-        }
-    }
-
-    var switchOnURL = "";
-    var switchOffURL = "";
-
-    for (var currOnActionIndex = 0; currOnActionIndex < actions.length; currOnActionIndex++) {
-        var currOnAction = actions[currOnActionIndex];
-
-        if (expectType(currOnAction, "iot:TurnOn")) {
-            var actionOnForm = getNodeOrDefault(currOnAction, "wot:hasForm", {}, warningCallback);
-            var targetOn = getNodeOrDefault(actionOnForm, "wotmedia:hasTarget", "{}", warningCallback);
-
-            switchOnURL = getNodeOrDefault(targetOn, "@id", "", warningCallback);
-        }
-    }
-
-    for (var currOffActionIndex = 0; currOffActionIndex < actions.length; currOffActionIndex++) {
-        var currOffAction = actions[currOffActionIndex];
-
-        if (expectType(currOffAction, "iot:TurnOff")) {
-            var actionOffForm = getNodeOrDefault(currOffAction, "wot:hasForm", {}, warningCallback);
-            var targetOff = getNodeOrDefault(actionOffForm, "wotmedia:hasTarget", "{}", warningCallback);
-
-            switchOffURL = getNodeOrDefault(targetOff, "@id", "", warningCallback);
-        }
-    }
-
-    return { "id": id, "name": name, "type": "switch", "statePropertyPath": statePropertyPath, "stateURL": asInternalURL(stateURL, "backend"), "switchOnURL": asInternalURL(switchOnURL, "backend"), "switchOffURL": asInternalURL(switchOffURL, "backend")};
+    return { "id": id, "name": name, "type": "lamp", "handlerGetState": handlerGetState, "handlerActionTurnOn": handlerActionTurnOn, "handlerActionTurnOff": handlerActionTurnOff};
 }
 
 // searches for a form with specific type otherfwise returns empty object
@@ -296,36 +191,197 @@ export const getFormWithType = (node, expectedType, warningCallback) => {
 export const getPropertyPath = (node, currPath, expectedSchemaType, warningCallback) => {
     var noop = function() {};
 
-    var isArray = false;
-    var props = getArrayNodeOrDefault(node, "wotschema:properties", [], noop);
-    if (props.length === 0) {
-        isArray = true;
-        props = getArrayNodeOrDefault(node, "wotschema:items", [], noop);
-    }
+    var nodeType = getNodeOrDefault(node["type"], "@id", "", warningCallback);
+    if (nodeType === "wotschema:ObjectSchema" || nodeType === "wotschema:ArraySchema") {
+        var isArray = false;
+        var props = getArrayNodeOrDefault(node, "wotschema:properties", [], noop);
 
-    for (var currPropsIndex = 0; currPropsIndex < props.length; currPropsIndex++) {
-        var currProp = props[0];
-
-        var updatedPath = currPath;
-        if (updatedPath === "") {
-            updatedPath = "$"
+        if (props.length === 0) {
+            isArray = true;
+            props = getArrayNodeOrDefault(node, "wotschema:items", [], noop);
         }
 
-        if (!isArray) {
-            updatedPath += "['"+getNodeOrDefault(currProp, "wotschema:propertyName", "UNKNOWN", noop)+"']";
-        } else {
-            updatedPath += "["+currPropsIndex+"]";
-        }
+        for (var currPropsIndex = 0; currPropsIndex < props.length; currPropsIndex++) {
+            var currProp = props[currPropsIndex];
 
-        if (expectType(currProp, expectedSchemaType)) {
-            return updatedPath;
-        }
+            var updatedPath = currPath;
+            if (updatedPath === "") {
+                updatedPath = "$"
+            }
 
-        var childPath = getPropertyPath(currProp, updatedPath, expectedSchemaType, noop);
-        if (childPath !== "") {
-            return childPath;
+            if (!isArray) {
+                updatedPath += "['"+getNodeOrDefault(currProp, "wotschema:propertyName", "UNKNOWN", noop)+"']";
+            } else {
+                updatedPath += "["+currPropsIndex+"]";
+            }
+
+            if (expectType(currProp, expectedSchemaType)) {
+                return updatedPath;
+            }
+
+            var childPath = getPropertyPath(currProp, updatedPath, expectedSchemaType, noop);
+            if (childPath !== "") {
+                return childPath;
+            }
+        }
+    } else if (nodeType === "wotschema:IntegerSchema") {
+        if (expectType(node, expectedSchemaType)) {
+            return "$";
         }
     }
 
     return "";
+}
+
+const interpreteAsBoolean = (value) => {
+    if (value === true) {
+        return true;
+    } else if (value === "1") {
+        return true;
+    } else if (value === 1) {
+        return true;
+    }
+
+    return false
+}
+
+// this func will search within all properties for a property with given property type and propertyValueType
+// if found a handler is generated accordingly
+const generateGetPropertyHandler = (properties, propertyType, propertyValueType, modifier, warningCallback, errorCallback) => {
+    for (var currPropertyIndex = 0; currPropertyIndex < properties.length; currPropertyIndex++) {
+        var currProperty = properties[currPropertyIndex];
+
+        if (expectType(currProperty, propertyType) && !expectType(currProperty, "iot:Timeseries")) {
+            var statePropertyPath = getPropertyPath(currProperty, "$", propertyValueType, warningCallback);
+
+            if (statePropertyPath === "") {
+                continue;
+            }
+
+            var form = getFormWithType(currProperty, "wot:readProperty", warningCallback);
+            var stateTarget = getNodeOrDefault(form, "wotmedia:hasTarget", "{}", warningCallback);
+            var stateURL = getNodeOrDefault(stateTarget, "@id", "", warningCallback);
+            
+            return async function() {
+                var resp = await fetch(asInternalURL(stateURL, "backend"));
+                if (resp.status === 200) {
+                    var jsonResp = await resp.json();
+
+                    try {
+                        var value = jp.query(jsonResp, statePropertyPath);
+                        if (value.length !== 1) {
+                            return {value: false, error: "unexpected value"};
+                        }
+
+                        return {value: modifier(value[0]), error: null};
+                    }
+                    catch (e) {
+                        console.log("Failed to extract value from response");
+                        return {value: false, error: "Failed to extract value from response"};     
+                    }
+                }
+
+                return {value: false, error: "invalid response code"};
+            }
+            
+            break;
+        }
+    }
+
+    errorCallback("Thing has no property with type "+propertyType+" and value type "+propertyValueType, properties);
+    return function() {
+        console.log("Property handler not found for type "+propertyType+" and value type "+propertyValueType);
+        return {value: false, error: "no property handler"};
+    }
+}
+
+// this func will search within all actions for an action with given type and inputType
+// if found a handler is generated accordingly
+const generateActionHandler = (actions, actionType, inputType, typeDependentParameterValue, warningCallback, errorCallback) => {
+    for (var currActionIndex = 0; currActionIndex < actions.length; currActionIndex++) {
+        var currAction = actions[currActionIndex];
+
+        if (expectType(currAction, actionType)) {
+            var actionForm = getNodeOrDefault(currAction, "wot:hasForm", {}, warningCallback);
+            var target = getNodeOrDefault(actionForm, "wotmedia:hasTarget", "{}", warningCallback);
+            var url = getNodeOrDefault(target, "@id", "", warningCallback);
+ 
+            // get the input schema
+            var inputSchema = getNodeOrDefault(currAction, "wot:hasInputSchema", {}, warningCallback);
+
+            var nodeType = getNodeOrDefault(inputSchema["type"], "@id", "", warningCallback);
+            if (nodeType == "wotschema:ObjectSchema") {
+                // check which params this action accepts
+                var actionPropertyFields = getArrayNodeOrDefault(inputSchema, "wotschema:properties", [], warningCallback);
+                for (var currActionPropertyFieldIndex = 0; currActionPropertyFieldIndex < actionPropertyFields.length; currActionPropertyFieldIndex++) {
+                    var currActionPropertyField = actionPropertyFields[currActionPropertyFieldIndex];
+
+                    if (expectType(currActionPropertyField, inputType)) {
+                        var input = getNodeOrDefault(currAction, "wot:hasInputSchema", {}, warningCallback);
+                        var props = getArrayNodeOrDefault(input, "wotschema:properties", [], warningCallback);
+                        
+                        var switchProperty = getNodeOrDefault(currActionPropertyField, "wotschema:propertyName", "", warningCallback);
+
+                        if (props.length !== 1) {
+                            console.log("Sorting out action " + currAction["wotschema:propertyName"] +" since it doesn't look like a simple turn on/off action");
+                            break;
+                        } else {
+                            return async function() {
+                                var body = {};
+                                body[switchProperty] = typeDependentParameterValue.onObject;
+                                var resp = await fetch(asInternalURL(url, "backend"), {
+                                    method: "POST",
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(body)
+                                });
+                        
+                                if (resp.status < 200 || resp.status > 204) {
+                                    return {error: "invalid response code"};
+                                }
+    
+                                return {error: null};
+                            }
+                        }
+                    }
+                }
+            } else if (nodeType == "wotschema:IntegerSchema") {
+                if (expectType(inputSchema, inputType)) {
+                    return async function() {
+                        console.log(url + ":" + typeDependentParameterValue.onInteger);
+                        var resp = await fetch(asInternalURL(url, "backend"), {
+                            method: "PUT",
+                            headers: {
+                                'Content-Type': 'application/plain'
+                            },
+                            body: new Blob([typeDependentParameterValue.onInteger])
+                        });
+                
+                        if (resp.status < 200 || resp.status > 204) {
+                            return {error: "invalid response code"};
+                        }
+
+                        return {error: null};
+                    }
+                }
+            } else {
+                console.log("NOTTTTTTT HIER!");
+                console.log(inputSchema["type"]);
+            }
+        }
+    }
+
+    errorCallback("Thing has no action with type "+actionType+" and input type "+inputType, actions);
+    return function() {
+        console.log("Action handler not found for type "+actionType+" and value type "+inputType);
+        return {error: "no action handler"};
+    }
+}
+
+class TypeDependentParameter {
+    constructor(objectType, integerType) {
+      this.onObject = objectType;
+      this.onInteger = integerType;
+    }
 }

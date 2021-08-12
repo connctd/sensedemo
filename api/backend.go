@@ -46,6 +46,7 @@ func HandleBackendCall(w http.ResponseWriter, r *http.Request) {
 
 		additionalHeaders["Authorization"] = "Basic " + token
 		additionalHeaders["Origin"] = localABB
+
 	}
 
 	forwardRequest(url, w, r, additionalHeaders)

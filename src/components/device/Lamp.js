@@ -18,24 +18,20 @@ export default class Lamp extends React.Component {
   }
 
   async resolveThingDescription() {
-      console.log(this.state.data.details)
-      var resp = await fetch(this.state.data.details.stateURL);
       var newState = this.state;
 
-      if (resp.status === 200) {
-        this.state.cbConnected(true);
-        var jsonResp = await resp.json();
-        
-        if (jsonResp[this.state.data.details.stateProperty]) {
+      var res = await this.state.data.details.handlerGetState();
+      if (res.error !== null) {
+        this.state.cbConnected(false);
+      } else {
+        if (res.value) {
           newState.fillColor = "#FF6E04";
         } else {
           newState.fillColor = "#000000";
         }
 
+        this.state.cbConnected(true);
         this.setState(newState);
-      }
-      else {
-        this.state.cbConnected(false);  
       }
   }
 

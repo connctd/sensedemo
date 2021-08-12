@@ -130,5 +130,8 @@ export var wotContext = [
     },
     {
         "purl":"http://purl.org/dc/terms/"
+    },
+    {
+        "type":"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
     }
 ];

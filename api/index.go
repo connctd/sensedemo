@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -39,7 +40,14 @@ func extractRequestedURL(requestedURL string) (string, error) {
 
 // forwards request r to given url; you can append additional headers
 func forwardRequest(url string, w http.ResponseWriter, r *http.Request, forwardHeaders map[string]string) {
-	proxyReq, err := http.NewRequest(r.Method, url, r.Body)
+	originalBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("Failed to read request body", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	proxyReq, err := http.NewRequest(r.Method, url, bytes.NewBuffer(originalBody))
 	if err != nil {
 		fmt.Println("Failed to create forward request", err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -141,12 +141,7 @@ export default class ControlLights extends React.Component {
                 continue;
             }
 
-            if (currThing.switchURL === "") {
-                console.log("Light has no switch url");
-                continue;
-            }
-
-            this.setLightState(currThing.switchURL, currThing.switchProperty, true);
+            currThing.handlerActionTurnOn();
         }
     }
 
@@ -159,12 +154,7 @@ export default class ControlLights extends React.Component {
                 continue;
             }
 
-            if (currThing.switchURL === "") {
-                console.log("Light has no switch url");
-                continue;
-            }
-
-            this.setLightState(currThing.switchURL, currThing.switchProperty, false);
+            currThing.handlerActionTurnOff();
         }
     }
 
