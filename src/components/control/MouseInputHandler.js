@@ -75,6 +75,7 @@ export default class MouseInputHandler extends React.Component {
         this.setState(newState);
     }
 
+
     onCanvasLeftClick(event) {
         this.setShowRoomContextMenu(false, 0, 0);
         this.setShowThingContextMenu(false, 0, 0);
@@ -83,28 +84,19 @@ export default class MouseInputHandler extends React.Component {
             return;
         }
 
-        var canvasViewbox = event.currentTarget.viewBox.baseVal;
-        // max coords of sites
-        var maxSiteX = canvasViewbox.width;
-        var maxSiteY = canvasViewbox.height;
+        let svg = event.currentTarget;
 
-        // how this is shown on screen
-        var shownX = event.currentTarget.width.baseVal.value;
-        var shownY = event.currentTarget.height.baseVal.value;
+        var p = svg.createSVGPoint();
+        
+        p.x = event.clientX;
+        p.y = event.clientY;
 
-        // ui is stretching the sites -> calculate scale
-        var scaleX = maxSiteX / shownX;
-        var scaleY = maxSiteY / shownY;
+        var ctm = svg.getScreenCTM().inverse();
+        var transformed =  p.matrixTransform(ctm);
 
-        // site is centered: remove offset left and top
-        var rect = event.currentTarget.getBoundingClientRect()
-
-        var x = (event.clientX - rect.left) * scaleX;
-        var y = (event.clientY - rect.top) * scaleY;
 
         var newState = this.state;
-
-        newState.userPosition = { x: x / 100 * this.state.scale, y: y / 100 * this.state.scale };
+        newState.userPosition = { x: transformed.x , y: transformed.y };
 
         console.log("Set user on");
         console.log(newState.userPosition);
