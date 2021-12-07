@@ -108,6 +108,7 @@ const extractElementData = async (model, successCallback, errorCallback, warning
 
     var position = extractPosition(model, errorCallback);
     var id = getNodeOrDefault(model, "@id", "", warningCallback);
+    var locationId = getNodeOrDefault(model, "id", "", warningCallback);
 
     var thing = await retrieveAndParseWoTModel(id, errorCallback, warningCallback, infoCallback);
 
@@ -116,7 +117,7 @@ const extractElementData = async (model, successCallback, errorCallback, warning
         return;
     }
 
-    return { id: id, position: position, details: thing };
+    return { id: id, position: position, details: thing, locationId: locationId};
 }
 
 // searches for geo coordinates and builds up an array of points

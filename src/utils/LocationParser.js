@@ -30,6 +30,8 @@ const getReducedModel = async (model, successCallback, errorCallback, warningCal
         return;
     }
 
+    model["@context"]["id"] = "https://schema.org/identifier";
+
     // change the default document loader
     const customLoader = async (url, options) => {
         if (url === "https://w3id.org/bot#") {

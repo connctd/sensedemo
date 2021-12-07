@@ -106,6 +106,9 @@ export var locationsContext = [
     },
     {
         "geo": "https://purl.org/geojson/vocab#"
+    },
+    {
+        "id": "https://schema.org/identifier"
     }
 ];
 

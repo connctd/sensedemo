@@ -86,7 +86,7 @@ export default class Thing extends React.Component {
                     onMouseOut={this.hoverOut}
                     onContextMenu={
                         event => {
-                            this.props.mouseInputHandlerRef.current.onThingRightClick(event, this.state.data);
+                            this.props.mouseInputHandlerRef.current.onThingRightClick(event, this.state.data, this.props.room);
                         }
                     }>
                 <svg>

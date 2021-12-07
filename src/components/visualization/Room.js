@@ -21,6 +21,7 @@ export default class Room extends React.Component {
                 data={thing}
                 offset={subElementOffset}
                 mouseInputHandlerRef={this.props.mouseInputHandlerRef}
+                room={this.props.data}
             />
         )
 

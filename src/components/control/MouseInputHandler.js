@@ -68,13 +68,12 @@ export default class MouseInputHandler extends React.Component {
         this.setState(newState);
     }
 
-    setThingInformation(id) {
-        var thingInformation = { id: id };
+    setThingInformation(id, locationId) {
+        var thingInformation = { id: id, locationId: locationId };
         var newState = this.state;
         newState.thingInformation = thingInformation;
         this.setState(newState);
     }
-
 
     onCanvasLeftClick(event) {
         this.setShowRoomContextMenu(false, 0, 0);
@@ -141,14 +140,12 @@ export default class MouseInputHandler extends React.Component {
         }
     }
 
-    onThingRightClick(event, elem) {
+    onThingRightClick(event, elem, room) {
         this.setShowRoomContextMenu(false, 0, 0);
         this.setShowThingContextMenu(true, event.pageX + 1, event.pageY + 1);
 
-        console.log(event);
-        console.log(elem);
-
-        this.setThingInformation(elem.id);
+        this.setThingInformation(elem.id, elem.locationId);
+        this.setRoomInformation(room.name, room.id, 0, 0);
 
         event.preventDefault();
         event.stopPropagation();
@@ -191,10 +188,73 @@ export default class MouseInputHandler extends React.Component {
         this.setAddThingDescriptionVisible(false);
     }
 
+    async removeThingLocationRelation(roomUrl, tdLocationId) {
+        var tmpPath = roomUrl.split("/");
+        var basePath = "";
+        for (var i = 0; i < tmpPath.length - 1; i++) {
+            if (i == 0) {
+                basePath = tmpPath[i];
+            } else {
+                basePath = basePath + "/" + tmpPath[i];
+            }
+        }
+
+        console.log("Removing...");
+        if (tdLocationId === "") {
+            console.log("Abort removal since td location id is empty");
+            return;
+        }
+
+        var deleteLocationRelation = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "id":tdLocationId,
+                "type":"bot:element"
+            })
+        }
+
+        var url = roomUrl;
+        var resp = await fetch(asInternalURL(url+"/relations", "backend"), deleteLocationRelation);
+
+        if (resp.status !== 204) {
+            console.error("Bad response. Failed to remove thing location relation");
+        } else {
+            this.removeThingLocation(basePath+ "/"+ tdLocationId);
+        }
+    }
+
+    async removeThingLocation(locationUrl) {
+        var deleteLocation = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+
+        var url = locationUrl;
+        var resp = await fetch(asInternalURL(url, "backend"), deleteLocation);
+
+        if (resp.status !== 204) {
+            console.error("Bad response. Failed to remove thing location");
+        } else {
+            window.location.reload();
+        }
+    }
+
     removeThingDescription() {
         this.setShowThingContextMenu(false, 0, 0);
-        console.log("Not implemented. We first need a better approach for referencing tds from within locations");
-    } 
+
+        console.log("Delete from room:");
+        console.log(this.state.roomInformation);
+        console.log("this thing...");
+        console.log(this.state.thingInformation);
+
+        this.removeThingLocationRelation(this.state.roomInformation.id, this.state.thingInformation.locationId);
+    }
+
 
     render() {
         return (
